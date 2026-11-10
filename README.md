@@ -80,12 +80,16 @@ npx skills remove interview-collector -g
 
 ### 在 OpenClaw 中使用
 
-1. 将本仓库的 `SKILL.md` 文件复制到 OpenClaw 的 skills 目录：
+1. 获取本仓库后，在仓库根目录执行以下命令，将 Skill 和运行所需的配置、模板一起复制到 OpenClaw 的 skills 目录：
 
 ```bash
-mkdir -p ~/.openclaw/skills/interview-collector
-cp SKILL.md ~/.openclaw/skills/interview-collector/
+skill_dir=~/.openclaw/skills/interview-collector
+mkdir -p "$skill_dir"
+cp SKILL.md "$skill_dir/"
+cp -R references "$skill_dir/"
 ```
+
+更新时，在新版仓库根目录重新执行同一组命令。
 
 2. 在 OpenClaw 对话中使用相同的触发词。
 
