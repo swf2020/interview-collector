@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：Redis为什么快？单线程模型怎么理解？在最新版本中引入多线程是为了解决什么问题？
 
 ### 考察点
@@ -30,6 +32,8 @@ Redis 高性能的底层逻辑有四层：
 **加分项：** 可提到 Redis 6.0 的 IO 多线程需要依赖 Redis 编译时指定 `make BUILD_TLS=yes` 等细节；能说出 Resp3 协议与多线程的配合；了解阿里云 Tair 等内核级多线程改造方案（命令执行层面真正并行化）。
 
 ---
+
+<a name="Q2"></a>
 
 ## Q2：Redis的网络模型是怎么样的？
 
@@ -66,6 +70,8 @@ Redis 的网络模型是一个经典的 **单 Reactor 单线程事件驱动模�
 **加分项：** 能画出 Redis 事件循环的流程图；知道 `ae.c` 中 `aeProcessEvents` 的具体实现；能对比 Nginx 的 Master-Worker 多进程 Reactor 模型与 Redis 差异；知道 Redis 的单 Reactor 模型在极端吞吐下会成为瓶颈（单线程 10w QPS 到顶），并了解一些工业界多 Reactor 改造方案。
 
 ---
+
+<a name="Q3"></a>
 
 ## Q3：Redis 的核心数据结构有哪些？请谈谈跳跃表 (ZSet) 的实现原理。
 
@@ -108,6 +114,8 @@ ZSet 是 Redis 中最精巧的数据结构之一，底层同时维护了两个�
 **加分项：** 提到 `span` 字段在分页排名中的应用（如 `ZRANGE ... WITHSCORES`）；知道 `zslRandomLevel()` 的实现细节（while 循环 + 25% 概率）；知道 LevelDB/BigTable 中跳跃表作为 MemTable 的应用；能对比跳表与 B+ 树在内存/磁盘场景下的适用差异。
 
 ---
+
+<a name="Q4"></a>
 
 ## Q4：HyperLogLog、ZSet、Bitmap 的底层原理和适用场景是什么？
 
@@ -159,6 +167,8 @@ HyperLogLog 是一种概率性基数估计算法。核心思想：对每个元�
 **加分项：** 能提到 HyperLogLog 的调和平均数修正（Harmonic Mean）以及 `PFMERGE` 的合并原理；知道实际业务中经常用 Bitmap + HyperLogLog 组合（Bitmap 做精确留存，HLL 做实时去重大盘）；能对比 RedisBloom 模块中的布隆过滤器、布谷鸟过滤器、Top-K 等更高级的概率数据结构。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：如何统计最近七天内每天都活跃的日活用户交集？
 
@@ -223,6 +233,8 @@ SINTER dau:20260510 dau:20260511 ... dau:20260516
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：缓存穿透、击穿和雪崩分别是什么？如何解决？
 
 ### 考察点
@@ -285,6 +297,8 @@ SINTER dau:20260510 dau:20260511 ... dau:20260516
 
 ---
 
+<a name="Q7"></a>
+
 ## Q7：布隆过滤器的原理是什么？布隆过滤器、互斥锁、逻辑过期分别是解决什么问题的？
 
 ### 考察点
@@ -320,6 +334,8 @@ SINTER dau:20260510 dau:20260511 ... dau:20260516
 **加分项：** 能推导误判率公式并现场计算 k 的最优值；了解布隆过滤器在实际业务中的初始化策略（全量扫描数据库写入布隆、每隔一段时间 rebuild 整个布隆）；知道 RedisBloom 模块的 `BF.ADD`、`BF.EXISTS`、`BF.RESERVE` 命令用法；能对比布谷鸟过滤器（支持删除）和布隆过滤器的差异；知道 Google Guava 中布隆过滤器的 Java 实现。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：逻辑过期和物理过期的区别是什么？
 
@@ -373,6 +389,8 @@ value = {
 
 ---
 
+<a name="Q9"></a>
+
 ## Q9：谈谈什么是布隆过滤器，它在过滤无效请求时的优缺点是什么？
 
 ### 考察点
@@ -406,6 +424,8 @@ value = {
 **加分项：** 能推导误判率公式 `p = (1 - e^(-kn/m))^k` 并现场算最优 k 值 `k = (m/n)*ln2`；知道 RedisBloom 模块的 `BF.RESERVE` 命令可以直接指定误差率和容量；了解布谷鸟过滤器（Cuckoo Filter）支持删除且空间效率更高的特性；知道实际业务中常见的「布隆 + 缓存空值」双保险方案——布隆过滤大部分，缓存空值兜底布隆的假阳性。
 
 ---
+
+<a name="Q10"></a>
 
 ## Q10：缓存击穿及解决方案？锁内二次判断是否必要？
 
@@ -481,6 +501,8 @@ if (locked) {
 
 ---
 
+<a name="Q11"></a>
+
 ## Q11：MySQL和Redis的数据一致性怎么保证？延迟双删有什么问题？为什么不先删缓存？
 
 ### 考察点
@@ -549,6 +571,8 @@ MySQL 和 Redis 运行在两个独立的存储系统中，无法做到原生事�
 **加分项：** 能解释为什么 Google 的 Spanner 用 TrueTime API 解决全球分布式事务而不需要上述方案；能画出 Cache Aside 模式下的读-写并发时序图，分析极端脏数据窗口；知道阿里中间件 `AHAS` 和 `Sentinel` 的降级策略中如何处理缓存一致性异常；了解 `Redis` 6.2+ 的 `CLIENT TRACKING` 服务端协助缓存失效模式。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：Redis+MySQL数据一致性的4种方案分别适用于什么场景？
 
@@ -622,6 +646,8 @@ MySQL 和 Redis 运行在两个独立的存储系统中，无法做到原生事�
 
 ---
 
+<a name="Q13"></a>
+
 ## Q13：修改数据库成功但Redis失败，前端返回什么响应？怎么处理？
 
 ### 考察点
@@ -692,6 +718,8 @@ public void updateOrder(Order order) {
 **加分项：** 能设计出完整的异步重试机制（包括指数退避、最大重试次数、死信队列）；了解阿里的 `Canal` 开源方案与 `Redis` 缓存同步的落地实践；知道 `Spring` 中 `@CacheEvict` 和 `@CachePut` 在异常场景下的行为差异；能提出用 Redis `set key value NX EX` 来缓解超时二义性。
 
 ---
+
+<a name="Q14"></a>
 
 ## Q14：Redis的持久化机制：RDB vs AOF 如何配置？
 
@@ -781,6 +809,8 @@ aof-use-rdb-preamble yes  # 开启混合持久化
 
 ---
 
+<a name="Q15"></a>
+
 ## Q15：解释分布式锁的几种实现方式，Redisson 如何解决锁过期但任务未执行完的问题？
 
 ### 考察点
@@ -842,6 +872,8 @@ Redisson 的解决方案：
 **加分项：** 能解释看门狗失效的极端场景——当持有锁的 Redisson 客户端发生 Full GC（`Stop-The-World`）暂停超过 30 秒，看门狗没来得及续期导致锁超时释放，另外的客户端拿到锁；能说出 `RedissonRedLock`（红锁）的实现原理和 Martin Kleppmann 对此的批判（红锁不满足 safety 属性）；了解 ZooKeeper 的 `Curator` 中 `InterProcessMutex` 的源码实现；能对比 etcd 的分布式锁实现（lease 机制）与 Redisson 看门狗。
 
 ---
+
+<a name="Q16"></a>
 
 ## Q16：Redisson看门狗机制是什么？底层实现如何？分布式锁误删如何发生？如何避免？
 
@@ -967,6 +999,8 @@ T=36s： 线程 C 获取锁，与线程 B 同时操作同一资源 → 数据竞
 
 ---
 
+<a name="Q17"></a>
+
 ## Q17：分布式锁的超时时间设为多少？为什么？看门狗机制如果有1000个线程需要1000个守护线程吗？
 
 ### 考察点
@@ -1006,6 +1040,8 @@ T=36s： 线程 C 获取锁，与线程 B 同时操作同一资源 → 数据竞
 **加分项：** 能画出 HashedWheelTimer 的结构图（一个环形数组 + 每个槽的链表 + 当前指针）；能解释 Netty 时间轮的 tickDuration 默认 100ms 代表什么含义以及如何调优；了解 Redisson 锁续期的时机是 `lockWatchdogTimeout / 3` = 默认 10 秒，意味着如果 3 次续期调用都因网络超时失败，锁才会真正过期；能说出除了看门狗外，阿里巴巴开源 Seata 的全局锁也用到了类似思路（以事务超时作为 backstop，而非调度器）。
 
 ---
+
+<a name="Q18"></a>
 
 ## Q18：Redis+Lua脚本分布式锁怎么实现的？
 
@@ -1070,6 +1106,8 @@ Redisson 的可重入解锁更复杂：先 `HEXISTS` 判断是否是自己的字
 **加分项：** 知道 Lua 脚本的 `script load` + `EVALSHA` 机制——脚本只在第一次加载时传输全文，后续用 SHA1 摘要即可，节省带宽；能解释为什么 Lua 脚本里不能有阻塞操作；了解 Redis 7.0 的 `EVAL_RO`（只读脚本）及 Redis Functions（比 Lua 脚本更工程化的管理方式）；能讲出 Redisson `unlockInnerAsync` 的完整 Lua 脚本（含 pub/sub 发布解锁消息，通知其他等待的客户端线程用 Semaphore 唤醒）。
 
 ---
+
+<a name="Q19"></a>
 
 ## Q19：Redis的热点Key问题你怎么解决？为什么一定要Double Check？如果锁竞争非常激烈怎么办？
 
@@ -1161,6 +1199,8 @@ return value.data  // 直接返回"过期"的旧数据，不阻塞
 
 ---
 
+<a name="Q20"></a>
+
 ## Q20：Redis集群部署节点后，key怎么定位到节点？双副本及单副本节点挂了之后访问情况？
 
 ### 考察点
@@ -1232,6 +1272,8 @@ user:{1001}:age  → 同样落同一个 Slot
 
 ---
 
+<a name="Q21"></a>
+
 ## Q21：如何在不影响线上业务的情况下，对千万级 Key 的 Redis 实例进行迁移？
 
 ### 考察点
@@ -1295,6 +1337,8 @@ redis-full-check -s <src_ip>:<src_port> -t <tgt_ip>:<tgt_port> --comparetimes=3
 **加分项：** 知道 Redis-shake 的 `rdb` 模式（只解析 RDB 文件，不连源端，适合迁移离线备份数据）vs `sync` 模式（全量+增量同步）的差异；了解 `redis-cli --cluster reshard` 在线迁移的局限（单 Key 迁移慢、大 Key 阻塞）；了解阿里云/腾讯云的 Redis 在线迁移服务背后的实现原理（阿里云叫 DTS，本质是伪装成 Slave 节点的数据同步工具）；知道迁移完成后如何用 `redis-full-check` 做最终一致性校验；能说出 Key 数量对全量同步时间的关系——不是 Key 数量决定，是 RDB 文件大小 + 目标端加载 RDB 的速度决定（加载速度受 `hz`、`rehash` 等参数影响）。
 
 ---
+
+<a name="Q22"></a>
 
 ## Q22：缓存有TTL吗？大量key同时过期怎么办？
 
@@ -1370,6 +1414,8 @@ Redis 大面积过期导致请求打 DB 时，在服务层对 DB 的访问加限
 
 ---
 
+<a name="Q23"></a>
+
 ## Q23：Kafka为什么那么快？Kafka为什么能实现高吞吐？
 
 ### 考察点
@@ -1421,6 +1467,8 @@ Kafka 不为每一条消息建索引，而是每隔 `log.index.interval.bytes`�
 **加分项：** 理解 Kafka 的 `unclean.leader.election.enable` 参数——当 ISR 中所有副本都挂了后才允许从 OSR 中选一个非同步副本作为 Leader，关了保证一致性但可能丢可用性；知道 `min.insync.replicas` + `acks=all` 的组合是 Kafka 最高级别的持久性保证；理解 `compacted topic`（日志压缩）适合用作分布式 KV 存储的快照（保留每个 Key 的最新值），不同于基于 TTL 的普通删除策略；了解 Kafka vs RocketMQ 在 `sendfile` 实现上的区别（RocketMQ 使用 `mmap` 实现读写分离：CommitLog 用 mmap 写，ConsumeQueue 用 sendfile 读）；能说出 Kafka 3.0 后 `KIP-405` 分层存储（Tiered Storage）的意义——突破磁盘容量限制将冷数据下沉到对象存储。
 
 ---
+
+<a name="Q24"></a>
 
 ## Q24：Kafka的ISR机制是什么？Leader选举流程？
 
@@ -1497,6 +1545,8 @@ ZooKeeper 模式下，Controller 选举依赖 ZK 临时节点 + 版本号 CAS。
 
 ---
 
+<a name="Q25"></a>
+
 ## Q25：说一下Kafka的Rebalance机制，Consumer Group中新增或减少消费者时分区如何重新分配？
 
 ### 考察点
@@ -1533,6 +1583,8 @@ Kafka 的 Rebalance 本质上是 Consumer Group 内发生成员变更时，将 T
 **加分项：** 了解 Kafka 3.x 中 Consumer Group 协议的演进（KIP-848，下一代 Group 协议）——将 Coordinator 的逻辑迁移到 Broker 端的 Group Coordinator，采用事件驱动的增量 Rebalance，目标是彻底消除 Eager 协议中 Stop-The-World 的问题；知道 `group.initial.rebalance.delay.ms=3000`（默认3s）的作用——等待更多 Consumer 加入后再开始首次 Rebalance，避免 Rolling Restart 时每次启动一个 Consumer 都触发一次全量 Rebalance；能画出 JoinGroup → SyncGroup 的时序图并解释 Coordinator 和 Group Leader 各自承担的职责差异；理解 `partition.assignment.strategy` 可以配置多个策略（逗号分隔），每个 Consumer 按顺序匹配 Group 内第一个公共支持的策略；掌握通过 `kafka-consumer-groups.sh --describe` 查看 Consumer Group 的分区分配和 Lag 情况。
 
 ---
+
+<a name="Q26"></a>
 
 ## Q26：为什么京东内部大量使用 RocketMQ？它相比 Kafka 的优势在哪些地方？
 
@@ -1581,6 +1633,8 @@ Kafka 重度依赖 ZooKeeper（3.3 KRaft 之前），运维复杂度高。Rocket
 **加分项：** 能说出 RocketMQ 的企业实践——京东自研的 JMQ 是基于 RocketMQ 二次开发的，支撑了京东 618 大促期间万亿级消息流量；理解 RocketMQ 同步刷盘（SYNC_FLUSH）和异步刷盘（ASYNC_FLUSH）在金融级可靠性和吞吐之间的权衡；知晓 RocketMQ 5.0 之后引入了 Proxy 层（gRPC 协议）和 Pop 模式（消费端拉取协议升级），使 RocketMQ 在云原生和多语言支持上补上了短板；能解释 Kafka 的零拷贝（sendfile）和 RocketMQ 的 mmap + write 的 I/O模型差异，分别适用于什么场景。
 
 ---
+
+<a name="Q27"></a>
 
 ## Q27：RocketMQ和Kafka的区别是什么？为什么选RocketMQ而不是Kafka？
 
@@ -1638,6 +1692,8 @@ Kafka 重度依赖 ZooKeeper（3.3 KRaft 之前），运维复杂度高。Rocket
 
 ---
 
+<a name="Q28"></a>
+
 ## Q28：Kafka一般用在什么场景？为什么选它而不是RabbitMQ？
 
 ### 考察点
@@ -1690,6 +1746,8 @@ Kafka 重度依赖 ZooKeeper（3.3 KRaft 之前），运维复杂度高。Rocket
 **加分项：** 能说出 Kafka 的零拷贝（sendfile系统调用）原理——数据从磁盘到网卡不经过用户态缓冲区，相比 RabbitMQ 的 Erlang 消息复制路径吞吐差异是数量级的；知道 RabbitMQ 的 Quorum Queue（3.8+ 基于 Raft）和 Kafka 的 ISR 模型在一致性保障上的差异——Quorum Queue 是 Raft 强一致性（写多数派返回），Kafka ISR 是最终一致性（Leader 写本地即返回）；了解 Kafka 的 Log Compaction 运作机制——后台周期性合并同 Key 记录保留最新，适合状态变更类数据；能举例 Kafka 在大型公司的实际应用（LinkedIn 的事件总线、Netflix 的实时数据管道、Uber 的行程事件流）并区分各场景下的 Topic 设计和分区数规划；掌握 Kafka 和 RabbitMQ 的混合架构经验——不是非此即彼，多数大公司是 Kafka 做数据管道 + RabbitMQ 或 RocketMQ 做业务消息。
 
 ---
+
+<a name="Q29"></a>
 
 ## Q29：RocketMQ的NameServer作用是什么？与Kafka的ZooKeeper有什么区别？
 
@@ -1752,6 +1810,8 @@ ZooKeeper 承担的是远比 NameServer 更重的职责：
 
 ---
 
+<a name="Q30"></a>
+
 ## Q30：如何保证消息在传输过程中不丢失？请从生产、代理和消费三个环节说明。
 
 ### 考察点
@@ -1811,6 +1871,8 @@ Broker 端的核心风险是：副本机制不健全导致的消息丢失。
 **加分项：** 能画出消息不丢失的完整时序图，标注每个环节的确认点（异步回调、刷盘完成、ISR 同步完成、消费者 ACK提交）；理解 Kafka acks 三个级别的确切语义——`acks=0`（不等确认）、`acks=1`（Leader 写入即确认）、`acks=all`（ISR 全同步才确认）和不同场景下的选择（高可靠场景 acks=all，高吞吐弱一致性 acks=1）；知道 RocketMQ 的 `flushDiskType` 对延迟的影响量级——ASYNC_FLUSH (ms级) 和 SYNC_FLUSH (ms->10ms+ )，以及通过 `flushDiskConsumeQueueThoroughInterval` 控制 ConsumeQueue 在极端情况下的刷盘频率；能说出 Kafka 中 `retries` 和 `max.in.flight.requests.per.connection` 的组合对消息顺序性的影响——当 `enable.idempotence=true` 时，Kafka 允许 5 个 in-flight 请求并保证幂等有序；掌握死信消息的生命周期管理——不是进了死信就万事大吉，需要有监控告警（DLQ 堆积量、重试次数趋势、失败原因分类）和人工干预流程。
 
 ---
+
+<a name="Q31"></a>
 
 ## Q31：如何保证消息百分之百入库？描述消息从生产到消费的完整可靠链路。
 
@@ -1889,6 +1951,8 @@ Producer 本地Outbox表(PENDING) → 事务消息Prepare → 本地事务执行
 **加分项：** 能画出带具体延迟数值的时序图，清晰标注每个环节的确认耗时（本地事务 5ms + Broker 同步 1ms + Consumer 处理 10ms），体现性能意识；能说出 Outbox 模式 + Change Data Capture（CDC）的组合优化——Outbox 表不直接发消息，而是由 Debezium 等 CDC 工具监听 Binlog 变化并转投 Kafka，进一步解耦业务代码和消息发送，详见 Chris Richardson 的微服务模式；知道 Kafka 的 Exactly-Once Semantics（EOS）只在 Stream 处理范围内生效——Producer 的幂等+事务保证 + Consumer 的 Read-Committed 隔离 + Offset 事务化提交，仅限 Kafka Streams 的 read-process-write 模式，不适用于外部系统的 end-to-end exactly-once；了解网易、美团等公司实践中的「消息可靠性三角」——宁可重复不可丢失（at-least-once）作为基准语义，幂等性保证最终正确，exactly-once 仅在流处理闭环内可用。
 
 ---
+
+<a name="Q32"></a>
 
 ## Q32：消息队列如何解决重复消费问题？如何保证消息幂等？
 
@@ -1994,6 +2058,8 @@ props.put("retries", Integer.MAX_VALUE);
 
 ---
 
+<a name="Q33"></a>
+
 ## Q33：消息队列如何保证消息不被重复消费？如何保证消息消费的顺序性？如何解决消息堆积？
 
 ### 考察点
@@ -2033,6 +2099,8 @@ props.put("retries", Integer.MAX_VALUE);
 **加分项：** 能解释「顺序消费为什么必然降低吞吐」——单线程串行消费无法并行，一个慢消息会阻塞整个队列（Head-of-Line Blocking），所以实际业务中优先考虑「局部顺序」而非「全局顺序」；能说出生产中的经验数字——Kafka 单分区吞吐上限约 10-20 万条/秒（取决于消息大小），超过就需增加分区；RocketMQ 顺序消费的 TPS 通常比并发消费低一个数量级。
 
 ---
+
+<a name="Q34"></a>
 
 ## Q34：谈谈事务消息的实现逻辑，如何保证本地事务与消息发送的原子性？
 
@@ -2105,6 +2173,8 @@ public class OrderTransactionListener implements RocketMQLocalTransactionListene
 
 ---
 
+<a name="Q35"></a>
+
 ## Q35：顺序消息是如何实现的？在全局顺序和局部顺序之间如何取舍？
 
 ### 考察点
@@ -2148,6 +2218,8 @@ public class OrderTransactionListener implements RocketMQLocalTransactionListene
 **加分项：** 能解释「顺序消息与流计算的关系」——Flink/Kafka Streams 在处理有状态计算时天然需要 Keyed State（按业务 Key 分组），这和 MQ 顺序消费的分区路由是同一设计思想；能说出「乱序窗口（Out-of-Order Window）」的概念——即使分区内有序，网络原因也可能导致 Kafka 消息写入顺序与业务时间不一致，此时需要在消费端引入 Event Time + Watermark 而非依赖 Ingestion Time；能讲出「为什么不建议用数据库的自增 ID 做顺序判断」——分库分表后自增 ID 不再全局单调，必须借助分布式 ID 生成器（Snowflake/TiDB Auto-Random）或业务时间戳。
 
 ---
+
+<a name="Q36"></a>
 
 ## Q36：消息队列的好处是什么？
 
@@ -2195,6 +2267,8 @@ Binlog 订阅：MySQL 的一条数据变更 → Canal/Debezium → Kafka → 同
 **加分项：** 能用一张图画出「有 MQ vs 无 MQ」的架构差异，讲出引入 MQ 后核心服务 QPS 提升的具体数字（注册接口 P99 从 2000ms → 50ms）；能讲出「MQ 不能解决所有异步问题」——MQ 适合「可以稍等一会儿」的场景，对于需要实时响应的（如支付结果查询），仍需要同步 RPC + 快速超时 + 轮询兜底的组合方案；能说出 MQ 在 CQRS / Event Sourcing 架构中的角色——事件作为一等公民，数据库只存聚合根快照 + 事件流（Kafka 作为 Event Store），MQ 不只是「通信管道」而是「真实数据源」。
 
 ---
+
+<a name="Q37"></a>
 
 ## Q37：消息队列如何处理消息积压问题？如果下游消费过慢怎么优化？
 
@@ -2246,6 +2320,8 @@ Binlog 订阅：MySQL 的一条数据变更 → Canal/Debezium → Kafka → 同
 **加分项：** 能讲出「Kafka 和 RocketMQ 在积压处理的差异」——Kafka 消息在磁盘上顺序读写不会阻塞新消息消费，但 RocketMQ 并发消费失败后进 Retry Topic，如果 Retry Topic 也积压会导致重试时间拉长；能解释「为什么不能无限制增加分区」——Kafka Controller 选举依赖 ZooKeeper，分区数过多导致 Controller 重启慢、Rebalance 时间长、文件句柄过多；能说出「Disruptor 模式在消费端的应用」——环形缓冲区（RingBuffer）+ 无锁 CAS 替代传统的 BlockingQueue，将单线程消费转化为高吞吐异步处理；能画出「积压应急决策树」——根据积压量级和 SLA 紧迫度自动推导处理策略。
 
 ---
+
+<a name="Q38"></a>
 
 ## Q38：怎么使用 RabbitMQ 延迟队列实现订单超时自动取消？
 
@@ -2327,6 +2403,8 @@ channel.basicPublish("order.delayed.exchange", "order.cancel", props, message.ge
 
 ---
 
+<a name="Q39"></a>
+
 ## Q39：消息队列的推拉模式有什么区别？
 
 ### 考察点
@@ -2380,6 +2458,8 @@ channel.basicPublish("order.delayed.exchange", "order.cancel", props, message.ge
 **加分项：** 能画图解释「长轮询 vs 短轮询 vs Push」的区别——短轮询（Consumer 问了就走）→ 空转浪费，长轮询（Consumer 问完挂起，Broker 有消息再回）→ 兼顾实时性和流控，Push（Broker 主动推）→ 延迟最低但 Consumer 被动；能说出 Kafka 选择纯 Pull 模式的历史原因——Kafka 设计时强调 Consumer 对处理速率的自主控制，同时顺序磁盘读取天然适合批量拉取（`sendfile` 零拷贝），Push 模式会导致零拷贝优势无法发挥；能讲出「流控的不对称性」——Push 模式下如果 Consumer 慢，消息堆积在 Consumer 内存（容易 OOM），Pull 模式下如果 Consumer 慢，消息堆积在 Broker 磁盘（持久化安全）——这是 Pull 模式在流控场景下最大的工程优势。
 
 ---
+
+<a name="Q40"></a>
 
 ## Q40：死信队列里面是怎么处理的？
 
@@ -2472,6 +2552,8 @@ public void consumeDlqMessage(DlqMessage msg) {
 
 ---
 
+<a name="Q41"></a>
+
 ## Q41：解释分布式锁的几种实现方式。Redisson看门狗机制是什么？分布式锁误删如何发生？如何避免？
 
 ### 考察点
@@ -2517,6 +2599,8 @@ public void consumeDlqMessage(DlqMessage msg) {
 **加分项：** 能讲出「Redlock 的争议」——Martin Kleppmann 对 Redlock 安全性的质疑点（GC pause、时钟跳跃导致 fencing token 不可靠），以及 Redis 作者 Antirez 的回应；理解 Redisson 看门狗与 `CompletionStage` / `RFuture` 的异步关系——看门狗续期是一个定时调度，如果 renew 连续失败（如 Redis 连接中断超过 3 次），会触发自动释放锁的 hook，避免僵尸锁占用；能讲出 **fencing token 的工程实现**——S3 / ZooKeeper 中的 zxid / Raft log index 作递增 token，写操作前校验 `current_fencing_token >= my_fencing_token`，如果从节点拿到旧 token 写入时会被拒绝；能说出「分布式锁与幂等的组合」——单靠分布式锁不能保证幂等，如果 A 获取锁后执行了写操作但还没来得及释放就超时，B 获取锁后会重复执行，所以锁内操作必须配合幂等 key（如唯一交易流水号 + Redis SETNX 或 DB 唯一约束）。
 
 ---
+
+<a name="Q42"></a>
 
 ## Q42：在分布式系统中，你是如何通过 MQ 实现服务异步解耦的？
 
@@ -2578,6 +2662,8 @@ Mq 解耦后最大的生产问题是：同一个消息可能被消费多次。�
 **加分项：** 能讲出「MQ 做 Event-Driven 与 Event Sourcing 的区别」——前者是通知型（「订单支付成功了」），消息不携带所有状态变化；后者是溯源型（「订单状态从待支付变为已支付」），消息携带完整的变更事件，可用于重建任意时间点的状态；能说出「消息 schema 演进策略」——Event 的格式会随时间变化（新增字段/废弃字段/类型变更），生产上一般用 Protobuf/Avro 的向后兼容的 schema register（如 Confluent Schema Registry），旧版本 Consumer 能忽略新字段，新版本 Consumer 能处理旧字段缺失；能解释「解耦后的最终一致性 SLA」——异步解耦后，明确各环节的时间 SLA（如：「订单支付 → 积分到账延迟 P99 < 3s」），超过 SLA 的事件需要补单机制。
 
 ---
+
+<a name="Q43"></a>
 
 ## Q43：项目是怎么保证缓存一致性的？双写不一致的解决方案？
 
@@ -2658,6 +2744,8 @@ Mq 解耦后最大的生产问题是：同一个消息可能被消费多次。�
 **加分项：** 能讲出「Read/Write Through 与 Cache Aside 的区别」——Cache Aside 是旁路缓存（业务代码自己控制缓存更新），Read/Write Through 是把缓存层作为代理，业务代码只访问缓存层，由缓存层负责 DB 的同步更新；能说出「多级缓存的一致性」——本地缓存（Caffeine）+ Redis + DB 三级缓存的失效策略——更新 DB 后，通过 MQ / Redis Pub/Sub 广播缓存失效通知，各服务节点监听后清除本地缓存，实现分布式节点的缓存同步；能讲出「缓存一致性与幂等的交叉」——在并发更新的场景中，如果 DB 中的版本号已经高于缓存中的版本号，写入缓存前进行版本号校验（compare-and-set），版本号低的旧数据不允许覆盖新数据；能解释「热点 Key 的一致性问题」——对于频繁更新的热点 Key，延迟双删会因为频繁删缓存导致缓存命中率极低；解法是**不删缓存而是更新缓存**，在业务逻辑中用 Redis `SET key value EX ttl` 将查好的最新 DB 数据直接写回缓存，避免「删缓存后大量穿透打崩 DB」。
 
 ---
+
+<a name="Q44"></a>
 
 ## Q44：热点帖子详情页秒开，你会怎么用Redis？缓存穿透/击穿/雪崩怎么治理？
 

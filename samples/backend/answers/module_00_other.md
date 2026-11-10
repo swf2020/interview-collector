@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：接口响应慢如何排查？
 
 ### 考察点
@@ -26,6 +28,8 @@
 **加分项：** 能结合实际案例说明如何用 eBPF（如 `bpftrace`）在不改代码的情况下追踪内核态耗时；了解 Go 的 `GODEBUG=gctrace=1` 和 `schedtrace` 来分析 GC 和调度延迟。
 
 ---
+
+<a name="Q2"></a>
 
 ## Q2：线上接口大量超时，完整排查流程是怎样的？
 
@@ -63,6 +67,8 @@
 
 ---
 
+<a name="Q3"></a>
+
 ## Q3：线上接口 TP99 突然从 50ms 飙升到 500ms，但 TP50 和 TP90 变化不大，如何排查？
 
 ### 考察点
@@ -94,6 +100,8 @@ TP50/TP90 不变但 TP99 飙升，这是最经典的长尾延迟（tail latency�
 **加分项：** 知道用 `go tool trace` 的 `Sync blocking profile` 和 `Goroutine analysis` 来分析长尾请求的完整生命周期；了解 Amazon 的"对冲请求"（hedged request）策略来治理长尾延迟——向多个副本同时发请求，取最快结果。
 
 ---
+
+<a name="Q4"></a>
 
 ## Q4：数组和 slice 分别是值类型还是引用类型？两个 slice 可以用 == 进行比较吗？Slice 底层结构、扩容机制？
 
@@ -136,6 +144,8 @@ type slice struct {
 **加分项：** 能解释 `append` 可能导致的"悬空引用"问题（扩容后原底层数组被 GC，但其他 slice 还持有旧引用）；了解 slice 的 `full slice expression` 语法 `a[low:high:max]` 控制容量来减少不必要的内存持有。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：Map 底层结构、哈希冲突、扩容机制？
 
@@ -183,6 +193,8 @@ Go 采用**渐进式扩容**，扩容不发生在单次操作中，而是分摊�
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：Channel 是什么？select 多路复用是什么？有缓冲和无缓冲区别？close 后的行为？
 
 ### 考察点
@@ -223,6 +235,8 @@ Go 采用**渐进式扩容**，扩容不发生在单次操作中，而是分摊�
 
 ---
 
+<a name="Q7"></a>
+
 ## Q7：GMP 调度模型如何理解？G/M/P 各自职责？本地队列挂在 P 还是 M 上？
 
 ### 考察点
@@ -259,6 +273,8 @@ P 的数量由 `GOMAXPROCS` 决定（默认等于 CPU 核数）。Go 引入 P �
 **加分项：** 理解 `runtime.Gosched()` 让出当前 P 让其他 G 执行；知道 `sysmon` 后台监控线程的作用——检测长时间未轮询的 P、抢占比 CPU 时间过长的 G（preemption）、回收空闲 M；了解 Go 1.14 引入的基于信号的异步抢占 `SIGURG`。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：Go 的内存逃逸问题怎么分析？协程能不能无限创建？
 
@@ -308,6 +324,8 @@ go test -bench=. -benchmem
 **加分项：** 理解逃逸分析不影响程序正确性，只影响性能；知道 `go build -gcflags="-m"` 中 `moved to heap` 和 `escapes to heap` 的区别；了解 Go 1.20 对 P 的 GC 标记工作窃取优化减少了 GC STW 时间。
 
 ---
+
+<a name="Q9"></a>
 
 ## Q9：defer是什么？多个defer执行顺序是怎样的？即使panic，defer也会执行吗？
 
@@ -361,6 +379,8 @@ func doSomething() (err error) {
 
 ---
 
+<a name="Q10"></a>
+
 ## Q10：Golang map 并发安全吗？sync.RWMutex + map 和 sync.Map 哪种更高效？
 
 ### 考察点
@@ -405,6 +425,8 @@ sync.Map 内部维护两个 map：
 **加分项：** 了解 `go test -race` 可以检测 map 并发竞争；知道 sync.Map 的 `LoadOrStore` 和 `LoadAndDelete` 等复合操作是原子的；理解 sync.Map 的 key 必须是可比较类型（comparable），这是和普通 map 相同的要求。
 
 ---
+
+<a name="Q11"></a>
 
 ## Q11：mutex的理解？普通模式和饥饿模式的区别？
 
@@ -456,6 +478,8 @@ runtime.SetMutexProfileFraction(1)
 **加分项：** 了解 Go 1.18 `TryLock()` 方法——非阻塞尝试加锁，适用于不希望阻塞的场景；理解 mutex 是公平但不是可重入的，Go 中同一 goroutine 对同一锁重复 Lock 会死锁；知道 `sync.Cond` 可以实现比 mutex 更细粒度的唤醒控制。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：Go 逃逸分析、GC机制（三色标记法）、sync.Pool的使用场景？
 
@@ -526,6 +550,8 @@ sync.Pool 是 Go 提供的**临时对象复用池**，核心作用是减少 GC �
 **加分项：** 了解 `GODEBUG=gctrace=1` 可以观察每次 GC 的耗时、回收的内存大小；知道 `GOGC` 和 `GOMEMLIMIT`（Go 1.19）是调控 GC 触发频率的关键参数；sync.Pool 的生存周期与 GC 绑定——每个 GC 周期 Pool 中未使用的对象会被清空。
 
 ---
+
+<a name="Q13"></a>
 
 ## Q13：Goroutine泄露场景有哪些？
 
@@ -651,6 +677,8 @@ wg.Wait() // 永远等不到 Done 计数归零
 
 ---
 
+<a name="Q14"></a>
+
 ## Q14：协程池怎么理解？
 
 ### 考察点
@@ -705,6 +733,8 @@ Go 的 goroutine 创建成本极低（初始栈 4KB），但仍受限于系统�
 **加分项：** 理解 ants 的 `PreAlloc` 模式预分配内存（适合固定高负载），vs 惰性模式（适合负载波动）；知道 Go 1.22 后 `for range` 变量语义变化（不再需要 `v := v` 惯用法），减少了协程池中闭包陷阱；了解 `errgroup` + `semaphore`（`golang.org/x/sync/semaphore`）也可以简化为轻量协程池。
 
 ---
+
+<a name="Q15"></a>
 
 ## Q15：系统每天晚上都会有一段时间瘫痪（高峰期），需要重启，你觉得是什么原因导致的？
 
@@ -768,6 +798,8 @@ Go 的 goroutine 创建成本极低（初始栈 4KB），但仍受限于系统�
 
 ---
 
+<a name="Q16"></a>
+
 ## Q16：RAG（检索增强生成）的工作流分哪几步？知识库生成的步骤是什么？
 
 ### 考察点
@@ -820,6 +852,8 @@ Go 的 goroutine 创建成本极低（初始栈 4KB），但仍受限于系统�
 
 ---
 
+<a name="Q17"></a>
+
 ## Q17：向量检索时怎么判断相似度？向量数据库怎么选？
 
 ### 考察点
@@ -869,6 +903,8 @@ Go 的 goroutine 创建成本极低（初始栈 4KB），但仍受限于系统�
 
 ---
 
+<a name="Q18"></a>
+
 ## Q18：你项目里的 Agent 架构是怎么设计的？
 
 ### 考察点
@@ -917,6 +953,8 @@ Go 的 goroutine 创建成本极低（初始栈 4KB），但仍受限于系统�
 **加分项：** 了解多 Agent 协作模式（如 AutoGen、CrewAI 的角色分工）；实际落地过 "Plan-then-Execute" 模式（先生成执行计划，用户确认后再执行）；在 prompt 中嵌入 few-shot tool-use 示例减少 LLM 选错工具的几率。
 
 ---
+
+<a name="Q19"></a>
 
 ## Q19：Spring AI对于Agent开发提供的常见模式有了解吗？MCP有哪些通讯协议？SSE的断点续传怎么实现？
 
@@ -1013,6 +1051,8 @@ public Flux<ServerSentEvent<String>> stream(
 
 ---
 
+<a name="Q20"></a>
+
 ## Q20：Agent要调用订单/物流/规则服务，如何设计工具执行框架？怎么降低AI幻觉？
 
 ### 考察点
@@ -1090,6 +1130,8 @@ public class ToolManifest {
 
 ---
 
+<a name="Q21"></a>
+
 ## Q21：聊天会话内存：如何在多轮对话中既记住上下文又不爆token？
 
 ### 考察点
@@ -1154,6 +1196,8 @@ public class ToolManifest {
 **加分项：** 了解 MemGPT / Letta 的内存分级体系（工作内存 → 归档内存）；实践过向量检索实现对话长程记忆（把历史对话 embedding 化，遇到相关话题时检索回来）；了解 token-aware 的动态压缩（根据 token 计数器决定压缩粒度，而非固定轮数）。
 
 ---
+
+<a name="Q22"></a>
 
 ## Q22：灰度与回滚：AIGC答案质量不好怎么快速止血？怎么灰度？怎么一键回滚？
 
@@ -1247,6 +1291,8 @@ public Result rollback(@RequestParam String targetVersion) {
 
 ---
 
+<a name="Q23"></a>
+
 ## Q23：RAG架构中向量库选Milvus/Chroma/Redis的考虑点是什么？幻觉怎么缓解？
 
 ### 考察点
@@ -1307,6 +1353,8 @@ RAG 本身就旨在缓解幻觉，但 RAG 也可能引入新幻觉——检索�
 **加分项：** 了解 Agentic RAG（Self-RAG / Corrective RAG）的工作机制——检索结果不好时 Agent 自动改写 query 重新检索；实际搭建过 RAG 评测流水线（RAGAS 的自动化评分 + 人工抽检）；理解 embedding 模型版本升级后的向量兼容问题（需要全量重建索引，推荐用 alias 机制做无缝切换）。
 
 ---
+
+<a name="Q24"></a>
 
 ## Q24：什么是微服务？和单体架构的核心区别是什么？微服务的核心优势和劣势？
 

@@ -1,5 +1,7 @@
 # 多 Agent 设计类 - 面试题解答
 
+<a name="Q1"></a>
+
 ## Q1：Multi-Agent 系统通常在什么场景下用？和 Single Agent 比有什么不同？在设计上什么情况下用单 Agent 什么情况下用多 Agent？
 
 ### 考察点
@@ -120,6 +122,8 @@
 - 能结合公司业务（如面试采集系统）给出具体的 Multi-Agent 设计方案
 - 提到 Anthropic 官方对 "不要过度设计 Agent" 的最佳实践（building effective agents 指南中强调："从最简单的方案开始，只在必要时增加复杂度"）
 
+<a name="Q2"></a>
+
 ## Q2：多 Agent 系统采用什么架构？任务如何编排？主 Agent 和子 Agent 怎么通信？
 
 ### 考察点
@@ -231,6 +235,8 @@ builder.add_conditional_edges("manager", assign_workers, ["worker"])
 - 能说明在实际项目中如何做编排策略的选型决策（比如"先用 LangGraph DAG 跑通核心流程，只在需要 LLM 动态决策的节点用条件边"）
 - 提到 Agent 间通信的性能优化：用结构化 JSON 而非自然语言做 Machine-to-Machine 通信以减少 token 消耗
 - 能够在白板上画出实际项目的架构图并讲解每个边（Edge）的含义
+
+<a name="Q3"></a>
 
 ## Q3：详细描述你项目中的 Multi-Agent 三层架构（Router -> Manager -> Sub-Agent）的设计逻辑？
 
@@ -346,6 +352,8 @@ class SubAgentOutput(TypedDict):
 - 给出实际性能数据：串行 vs 并行的延迟对比、各层 token 消耗占比
 - 提到模型选型策略：Router 用轻量模型（延迟敏感），Manager 用中等模型（需要推理能力），Sub-Agent 用强模型（质量敏感）
 - 能说明这个架构与微服务的相似性和差异（三层架构是"agentic 微服务"）
+
+<a name="Q4"></a>
 
 ## Q4：在设计上，什么情况下你会用单 Agent，什么情况下会用多 Agent？
 
@@ -469,6 +477,8 @@ class SubAgentOutput(TypedDict):
 - 提到 Anthropic "building effective agents" 指南中的核心原则：从最简单的方案开始，只在必要时增加复杂度
 - 能用具体数据说明一次拆分决策的前后对比（延迟、准确率、维护成本）
 - 提到"错误放大效应"——多 Agent 流水线中错误会逐级放大，这是很多人忽略的风险
+
+<a name="Q5"></a>
 
 ## Q5：多 Agent 之间的数据传输或者通信一般是怎么做的？如果有并发情况怎么处理？
 
@@ -612,6 +622,8 @@ def write_with_version_check(state, agent_id, data, expected_version):
 - 提到 Agent 间通信的"错误传播"问题：一个 Agent 的错误输出如何影响下游 Agent，以及如何设计"熔断"机制
 - 能比较"共享内存" vs "消息传递"两种并发模型的优劣，并结合 Agent 系统给出选型建议
 - 提到流式传输在并发场景下的挑战：多个 Agent 同时流式输出，前端如何正确拼接和展示
+
+<a name="Q6"></a>
 
 ## Q6：如果有多个 Agent 同时去操作数据库或者文件，这种并发你怎么处理？
 
@@ -766,6 +778,8 @@ def resolve_conflict_with_llm(agent_a_output, agent_b_output, original_content):
 - 提到分布式锁的 Redlock 算法及其在 Agent 场景下的适用性
 - 给出一个实际的并发冲突排查流程：如何从日志中定位是哪个 Agent 在什么时间点造成了冲突
 - 提到"Agent 事务"的概念——不仅包括数据库事务，还包括 Agent 推理过程的"上下文冻结"
+
+<a name="Q7"></a>
 
 ## Q7：请设计一个多 Agent 协作系统来处理一个复杂的客户工单，阐述系统中不同 Agent 的角色、它们之间如何通信与协作。
 

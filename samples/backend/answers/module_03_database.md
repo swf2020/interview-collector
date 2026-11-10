@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：MySQL InnoDB的索引是什么数据结构？为什么默认使用B+树作为索引结构，而不是红黑树或哈希表？
 
 ### 考察点
@@ -26,6 +28,8 @@ B+树的设计对数据库极其友好：非叶子节点仅存索引键不存数
 **加分项：** MySQL InnoDB 在自适应哈希索引（Adaptive Hash Index）中其实使用了哈希表——当某些热点数据页被频繁以相同模式访问时，InnoDB 会在 B+树之上自动构建 Hash 索引，达到 O(1) 的等值查找。这是两种结构的工程级融合，而不是非此即彼。
 
 ---
+
+<a name="Q2"></a>
 
 ## Q2：B+树和B树的区别是什么？
 
@@ -58,6 +62,8 @@ B树和B+树都是多叉平衡查找树，核心区别在于数据存储方式�
 **加分项：** MongoDB 早期使用 B树（MMAPv1 引擎），后来在 WiredTiger 中也转向了 B+树变体。B树更适合"单点查询为主"的场景（如文件系统的 inode 索引），B+树更适合"范围扫描为主"的 OLTP 场景。MySQL InnoDB 的 B+树实现实际上在叶子节点层面做了更多优化，包括页内二分查找、页间双向链表等。
 
 ---
+
+<a name="Q3"></a>
 
 ## Q3：解释聚簇索引与非聚簇索引的区别，什么情况下会发生"回表"？
 
@@ -96,6 +102,8 @@ InnoDB 主键索引与二级索引的物理存储差异，以及查询效率的�
 
 ---
 
+<a name="Q4"></a>
+
 ## Q4：联合索引是什么？比如建了(a,b,c)，查 a c 能用索引吗？
 
 ### 考察点
@@ -125,6 +133,8 @@ InnoDB 主键索引与二级索引的物理存储差异，以及查询效率的�
 **加分项：** 联合索引的列顺序是性能优化的关键——高选择性的列放前面过滤效果最好。但也要考虑 SQL 模板：如果 80% 的查询都是 `WHERE a=? AND b=?`，剩下 20% 是 `WHERE a=?`，那 `(a,b)` 就比 `(b,a)` 合理，因为前者两种查询都能覆盖。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：联合索引和最左前缀匹配原则是什么？索引失效是由什么原因导致的？
 
@@ -191,6 +201,8 @@ InnoDB 主键索引与二级索引的物理存储差异，以及查询效率的�
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：联合索引(a,b,c)下，WHERE a=? ORDER BY c 和 ORDER BY b 的索引使用情况分别如何？
 
 ### 考察点
@@ -233,6 +245,8 @@ InnoDB 主键索引与二级索引的物理存储差异，以及查询效率的�
 **加分项：** 即使 Extra 显示 `Using filesort`，MySQL 也不是每次都真的操作磁盘。优先使用内存中的 sort_buffer_size 做排序，只有当排序数据量超过这个阈值时才溢出到磁盘。`SHOW STATUS LIKE 'Sort_merge_passes'` 可以监控磁盘排序的次数。
 
 ---
+
+<a name="Q7"></a>
 
 ## Q7：谈谈你对索引下推 (ICP) 和覆盖索引的理解。
 
@@ -286,6 +300,8 @@ SELECT * FROM user WHERE name LIKE 'zhang%' AND age > 25;
 **加分项：** MySQL 5.7+ 还引入了 MRR（Multi-Range Read）和 BKA（Batched Key Access），与 ICP 配合使用效果更好。当 ICP 过滤后还剩一批主键 ID 时，MRR 将这些 ID 排序后批量回表，把随机 I/O 变成更顺序的I/O。这三者形成组合拳：ICP 减少回表行数，MRR 优化回表I/O模式，覆盖索引直接消除回表。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：大表翻页优化：当 Limit 数值很大时性能骤降，你会如何改写 SQL？
 
@@ -350,6 +366,8 @@ SELECT * FROM t WHERE id > 100 ORDER BY id LIMIT 20;
 
 ---
 
+<a name="Q9"></a>
+
 ## Q9：加索引能否解决深分页问题？
 
 ### 考察点
@@ -378,6 +396,8 @@ SELECT * FROM t WHERE id > 100 ORDER BY id LIMIT 20;
 **加分项：** PostgreSQL 在某些场景下可以用 `Index Scan Backward` + `LIMIT` 的组合利用索引直接快速定位，但这依赖索引类型和统计信息。MySQL 8.0 在这方面没有本质改进。另外，`OFFSET` 的语义缺陷在分布式数据库中更严重——TiDB 中 `LIMIT 1000000, 20` 会把 100 万行数据从 TiKV 拉到 TiDB Server 再丢弃，网络开销比单机 MySQL 更夸张。深分页在任何数据库中都是反模式，要在 SQL 设计阶段就避免。
 
 ---
+
+<a name="Q10"></a>
 
 ## Q10：Explain用过吗？有哪些主要字段？创建索引有哪些注意点？
 
@@ -429,6 +449,8 @@ EXPLAIN 输出字段的实际解读能力，以及索引从设计到上线维护
 
 ---
 
+<a name="Q11"></a>
+
 ## Q11：有用户表、签到表（自增ID, user_id, 签到时间, 状态），要查某个用户某个月的签到记录，怎么加索引？
 
 ### 考察点
@@ -466,6 +488,8 @@ ORDER BY checkin_time ASC;
 **加分项：** 签到表通常数据量大（日活用户 x 每天一条），按月分表（`checkin_202506`）配合 `(user_id, checkin_time)` 索引是更高阶的优化——减少单表数据量，同时查询时直接路由到对应月表。如果使用 TiDB，可以建 `PRIMARY KEY (user_id, checkin_time)` 替代自增 ID 主键，查询用户签到记录变成主键扫描，性能最优。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：MySQL索引失效的情况有哪些？LIKE '%%'内部发生了什么？
 
@@ -510,6 +534,8 @@ B+树的叶子节点按字典序排列。对于 `LIKE 'abc%'`，MySQL 可以快�
 
 ---
 
+<a name="Q13"></a>
+
 ## Q13：事务隔离级别有哪些？它们分别解决什么问题？
 
 ### 考察点
@@ -550,6 +576,8 @@ SQL 标准定义了四种事务隔离级别，它们解决的核心问题是**�
 **加分项：** 需要特别注意——SQL 标准中 REPEATABLE READ 级别的定义**不要求解决幻读**，SQL 标准认为只有 SERIALIZABLE 能解决幻读。但 MySQL InnoDB 通过 **Next-Key Lock**（记录锁 + 间隙锁）在 REPEATABLE READ 级别解决了幻读，这是 MySQL 对标准的超集实现。所以面试中如果回答"RR 解决了幻读"，一定要加一句"这是 InnoDB 的实现，标准 SQL 不是这样的"。
 
 ---
+
+<a name="Q14"></a>
 
 ## Q14：MySQL默认隔离级别是什么？有没有解决幻读？如何解决的？
 
@@ -613,6 +641,8 @@ SELECT * FROM t WHERE id = 100 FOR UPDATE;  -- 读到了事务B插入的行！�
 
 ---
 
+<a name="Q15"></a>
+
 ## Q15：什么是 MVCC (多版本并发控制)？它是如何通过 Undo Log 实现的？
 
 ### 考察点
@@ -667,6 +697,8 @@ MVCC 的底层实现：三个隐藏列、Undo Log 版本链、ReadView 可见性
 
 ---
 
+<a name="Q16"></a>
+
 ## Q16：MVCC能解决脏读和幻读吗？
 
 ### 考察点
@@ -719,6 +751,8 @@ SELECT COUNT(*) FROM t WHERE age > 25 FOR UPDATE;  -- 当前读 → 返回 4 条
 
 ---
 
+<a name="Q17"></a>
+
 ## Q17：脏读和不可重复读的区别？MySQL ACID的一致性是什么？一致性和另外三个的关系？
 
 ### 考察点
@@ -758,6 +792,8 @@ MySQL 语境下的 Consistency 有两个层面。第一层是数据库层面的�
 **加分项：** 分布式系统中，一致性的含义完全不同——CAP 定理中的 C 指"所有节点在同一时刻看到相同数据"，这是线性一致性（Linearizability），和 ACID 的 C 不是一回事。面试中如果被问到"分布式事务的一致性保证"，一定要先确认对方在聊 ACID 的 C 还是 CAP 的 C，混淆两者是常见的面试翻车点。
 
 ---
+
+<a name="Q18"></a>
 
 ## Q18：数据库ACID四个特性分别是怎么去实现的？
 
@@ -808,6 +844,8 @@ Redo Log（重做日志）记录的是"数据页的物理修改"——把页上�
 
 ---
 
+<a name="Q19"></a>
+
 ## Q19：MySQL的原子性是怎么保证的？
 
 ### 考察点
@@ -847,6 +885,8 @@ Undo Log 页的修改本身会产生 Redo Log。也就是说，写一条 Undo Lo
 **加分项：** MySQL 8.0 重构了 Undo Log 的管理方式——之前 Undo Log 存储在共享表空间的 `ibdata1` 中，膨胀后无法收缩（即使事务已提交），是 MySQL 5.7 运维的一大痛点。8.0 引入独立的 Undo 表空间（`innodb_undo_tablespaces >= 2`），支持在线截断（`innodb_undo_log_truncate=ON`），解决了 Undo 表空间无限膨胀的问题。生产环境从 5.7 升级到 8.0 时，Undo Log 管理是必须要关注的变更点。
 
 ---
+
+<a name="Q20"></a>
 
 ## Q20：MySQL UPDATE 语句执行流程是怎样的？
 
@@ -892,6 +932,8 @@ Undo Log 页的修改本身会产生 Redo Log。也就是说，写一条 Undo Lo
 **加分项：** `UPDATE ... WHERE id = 2` 这种主键等值更新属于"点更新"，锁粒度是最小的（单个 Record Lock）。但如果 WHERE 条件走了非唯一索引且在 RR 级别下，InnoDB 会加 Next-Key Lock（记录锁 + 间隙锁），锁住索引记录和前后间隙，防止幻读。曾经有个线上事故：一个看似简单的 `UPDATE t SET status = 1 WHERE status = 0 AND create_time < now()`，因为没有合适的索引走了全表扫描，每条记录都加 X 锁，导致整个表被锁住，其他事务全部阻塞。索引的选择直接影响锁的粒度，这是 DBA 的核心修养。
 
 ---
+
+<a name="Q21"></a>
 
 ## Q21：undolog redolog binlog 如何写入磁盘？
 
@@ -950,6 +992,8 @@ BEGIN → 加载数据页 → 写 Undo Log（含其 Redo）→ 修改数据页
 
 ---
 
+<a name="Q22"></a>
+
 ## Q22：redolog和binlog如何写入磁盘？两阶段提交是什么？如果没有两阶段提交会怎么样？
 
 ### 考察点
@@ -1002,6 +1046,8 @@ Redo Log 属于 InnoDB 引擎层，Binlog 属于 MySQL Server 层。一次事务
 
 ---
 
+<a name="Q23"></a>
+
 ## Q23：MySQL有哪些日志？
 
 ### 考察点
@@ -1047,6 +1093,8 @@ MySQL 的日志体系可分为两类：**事务类日志**（影响数据一致�
 **加分项：** MySQL 8.0 的**原子 DDL（Atomic DDL）** 是一个被低估的重要特性。在 5.7 中，`DROP TABLE t1, t2` 执行到一半崩溃，可能出现 t1 删了 t2 没删的情况。8.0 引入 DDL Log 后，DDL 操作被拆成 prepare → execute → commit 三阶段，崩溃后要么全部应用要么全部回滚，解决了多年来的 DDL 非原子性痛点。这个特性依赖 DDL Log，结合 `INFORMATION_SCHEMA.INNODB_DDL_LOG` 表可以查看 DDL 的执行进度。
 
 ---
+
+<a name="Q24"></a>
 
 ## Q24：如果一条 SQL 语句执行很慢，你通常会从哪些维度进行分析和优化？
 
@@ -1119,6 +1167,8 @@ SELECT * FROM performance_schema.data_lock_waits; -- 锁等待链（谁阻塞了
 
 ---
 
+<a name="Q25"></a>
+
 ## Q25：在高并发场景下，如何防止数据库产生死锁？
 
 ### 考察点
@@ -1146,6 +1196,8 @@ MySQL InnoDB 中死锁的本质是不同事务争抢锁资源时形成循环等�
 MySQL 8.0 的 `performance_schema.data_locks` 和 `data_lock_waits` 两张表能实时查看当前所有锁和等待链，配合 `sys.innodb_lock_waits` 视图可以直接看到"谁阻塞了谁"。另一个高阶技巧是用 `SELECT ... FOR UPDATE SKIP LOCKED`（MySQL 8.0+）实现队列消费——从待处理表中取出任务时跳过已被锁定的行，在任务队列场景中天然避开了锁等待。
 
 ---
+
+<a name="Q26"></a>
 
 ## Q26：如何在 MySQL 层面提升并发量？
 
@@ -1179,6 +1231,8 @@ MySQL 8.0 的 `performance_schema.data_locks` 和 `data_lock_waits` 两张表能
 MySQL 8.0 版本本身就是一个大的并发提升：`innodb_log_writer_thread` 将 Redo Log 写入异步化，`Contention-Aware Transaction Scheduling (CATS)` 算法优化了事务调度，InnoDB 内部的 mutex 也做了大量拆分（如 `log_sys->mutex` 拆为多个更细粒度的锁）。如果还在用 5.7 且并发是瓶颈，升级到 8.0 本身就值 20-30% 的性能提升。另外，`innodb_adaptive_hash_index` 在高并发下可能成为瓶颈（AHI 的全局 rw-lock 竞争），OLTP 高并发场景下有时关闭反而更好。
 
 ---
+
+<a name="Q27"></a>
 
 ## Q27：如果不用 Redis，直接在 MySQL 层面避免高并发下的重复点赞，怎么设计？
 
@@ -1243,6 +1297,8 @@ UPDATE targets SET like_count = like_count + 1 WHERE target_id = ? AND ROW_COUNT
 
 ---
 
+<a name="Q28"></a>
+
 ## Q28：如果并发量很大，乐观锁和悲观锁的区别？使用悲观锁有什么问题？
 
 ### 考察点
@@ -1300,6 +1356,8 @@ COMMIT;
 MySQL 8.0 引入了 `SELECT ... FOR UPDATE NOWAIT` 和 `SELECT ... FOR UPDATE SKIP LOCKED`。NOWAIT 在拿不到锁时立即报错而非等待，SKIP LOCKED 跳过已被锁定的行——两者都避免了因锁等待耗尽连接池。另一个减少悲观锁影响的方法是"提前锁定"：在事务开始时一次性锁定所有需要的行，按主键顺序加锁，避免事务中途动态增锁增加死锁概率。
 
 ---
+
+<a name="Q29"></a>
 
 ## Q29：怎么用MySQL实现分布式锁？
 
@@ -1366,6 +1424,8 @@ MySQL 8.0.21 引入了 `GET_LOCK()` 的新变体 `GET_LOCK(lock_name, timeout)` 
 
 ---
 
+<a name="Q30"></a>
+
 ## Q30：做表连接时，查询条件写在where后面和写在Join后面有什么区别？
 
 ### 考察点
@@ -1429,6 +1489,8 @@ EXPLAIN SELECT * FROM orders o LEFT JOIN users u ON o.user_id = u.id WHERE u.sta
 对于复杂报表 SQL（3 个以上 LEFT JOIN），条件放错导致的数据量差异可能是指数级的。建议在每个 LEFT JOIN 的 ON 子句中尽量把被关联表的过滤条件补全，让 MySQL 在连接阶段就缩小结果集——这等价于把"先连接大表再过滤"优化为"先过滤小表再连接"。可以用 EXPLAIN 的 `filtered` 列（MySQL 5.7+）和 `rows` 列估算数据量的衰减比例，验证优化效果。
 
 ---
+
+<a name="Q31"></a>
 
 ## Q31：分库分表的分表键是怎么设计的？为什么分128张表？
 

@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：volatile关键字如何保证内存可见性和禁止指令重排？它的底层是如何实现的？
 
 ### 考察点
@@ -31,6 +33,8 @@
 **加分项：** 能对比 C++ 的 `std::atomic` 的 memory_order 与 Java `volatile` 的对应关系（Java 的 `volatile` 等价于 C++ `memory_order_seq_cst`），以及 `Unsafe.putOrderedObject` 的 lazySet 语义（只保证写-写顺序，不保证对其他线程立即可见，适合记录日志等场景）。
 
 ---
+
+<a name="Q2"></a>
 
 ## Q2：CAS和普通加锁的优劣是什么？互斥锁与自旋锁的区别是什么？
 
@@ -74,6 +78,8 @@
 
 ---
 
+<a name="Q3"></a>
+
 ## Q3：解释一下 CAS 原理及 ABA 问题，你在实际项目中有没有用到过原子类？
 
 ### 考察点
@@ -105,6 +111,8 @@ CAS（Compare-And-Swap）是一条 CPU 原子指令（x86 上是 `cmpxchg`，ARM
 **加分项：** 提及 JDK 9 的 `VarHandle` 提供了比 `AtomicXXX` 更灵活的内存排序控制（relaxed/acquire/release/volatile 四种模式），可以实现比 `volatile` 成本更低的操作；提及 Disruptor 中 Sequence 的 `lazySet`（等价于 `putOrderedLong`）用于批量更新多个消费者的 cursor，减少不必要的内存屏障。
 
 ---
+
+<a name="Q4"></a>
 
 ## Q4：synchronized锁升级的过程是怎样的？为什么会有这个过程？
 
@@ -145,6 +153,8 @@ CAS（Compare-And-Swap）是一条 CPU 原子指令（x86 上是 `cmpxchg`，ARM
 **加分项：** 能画出 Mark Word 在不同锁状态下 64-bit 的位布局（无锁：25-bit hash + 1-bit unused + 2-bit age + 1-bit 0 + 2-bit lock state = 01；轻量级锁时指向栈中 Lock Record 的指针 + 00；重量级锁指向 ObjectMonitor 的指针 + 10），并能说明 JVM 为什么要用 2-bit 的 lock state 区分这四种状态。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：ReentrantLock和synchronized的区别？生产上一般用哪个？AQS的实现原理是什么？有哪些实现类？
 
@@ -190,6 +200,8 @@ AQS 是整个 `java.util.concurrent` 包的基石，核心是两个东西：
 **加分项：** 能讲清 AQS 中 `addWaiter` 入队操作为什么要"先快速 CAS 入队再进入完整 enq 逻辑"的两段式设计，以及 `cancelAcquire` 中处理取消节点的复杂性（前驱节点是取消状态时需要向前遍历找到有效节点），体现对源码细节的掌握。
 
 ---
+
+<a name="Q6"></a>
 
 ## Q6：如何基于AQS实现自定义锁？读写锁的公平性如何保证？锁降级的实现原理？
 
@@ -281,6 +293,8 @@ try {
 
 ---
 
+<a name="Q7"></a>
+
 ## Q7：什么是线程池的饱和策略？你会如何配置核心线程数？
 
 ### 考察点
@@ -327,6 +341,8 @@ try {
 **加分项：** 提及 JFR 中可以观察线程池的 `ThreadPoolExecutor` 事件（任务提交、开始、结束时间），用于分析线程池瓶颈；提及 `ForkJoinPool` 在 Java 8+ 作为默认 parallelStream 线程池，其工作窃取（Work-Stealing）机制与 `ThreadPoolExecutor` 的共享工作队列有本质区别；提及 `Virtual Threads`（Java 21+）对线程池配置逻辑的颠覆 —— 虚拟线程几乎可以无限制创建，IO 密集型任务不再需要精确计算线程数。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：线程池最大线程数什么时候能拉满？CallerRunsPolicy有什么风险？
 
@@ -377,6 +393,8 @@ try {
 
 ---
 
+<a name="Q9"></a>
+
 ## Q9：创建线程有几种方式？Java中线程间数据同步怎么做？
 
 ### 考察点
@@ -415,6 +433,8 @@ try {
 **加分项：** 提及 `VarHandle`（JDK 9+）作为 `Unsafe` 的替代方案，提供更安全的 CAS、内存屏障操作（`acquire`/`release`/`opaque`），比 `AtomicXxx` 粒度更细；提及 Project Loom 的虚拟线程对传统线程创建思维的颠覆 —— 100 万个虚拟线程同时运行不再是问题，线程创建的边际成本从 MB 级降到 KB 级。
 
 ---
+
+<a name="Q10"></a>
 
 ## Q10：Thread对象、虚拟线程和操作系统线程的对应关系？线程崩掉后是整个进程退出，还是可由其他线程捕获处理？
 
@@ -464,6 +484,8 @@ try {
 **加分项：** 提及 Linux 信号与 JVM 的交互 —— `SIGSEGV` 的 `hs_err_pid.log` 文件解读、`-XX:OnError` / `-XX:OnOutOfMemoryError` 的故障自愈脚本；提及虚拟线程的 `Thread.Builder.uncaughtExceptionHandler` 设置方式与传统线程一致，但因为虚拟线程数量极大，异常处理策略需要考虑日志量爆炸的问题。
 
 ---
+
+<a name="Q11"></a>
 
 ## Q11：虚拟线程（Virtual Thread）与平台线程的区别？使用场景？
 
@@ -516,6 +538,8 @@ try {
 **加分项：** 提及 `ScopedValue`（JDK 20 incubator -> 22 preview）是虚拟线程时代的 ThreadLocal 替代方案（不可变、自动清理、调用链传递）；提及 Pin 问题的监控方法（`-Djdk.tracePinnedThreads=full` 可以输出被钉住的调用栈）；提及虚拟线程与 Reactive/异步编程的对比 —— 虚拟线程让代码保持同步风格的同时获得异步的并发效果，可能终结"每个 IO 操作用 CompletableFuture 组合"的时代。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：在多线程环境下，如何保证一个变量的可见性与有序性？
 
@@ -574,6 +598,8 @@ try {
 **加分项：** 提及 `jctools` 和 `disruptor` 这类高性能无锁队列中 `VarHandle.acquire` / `VarHandle.release` 的精确内存屏障用法（比 `volatile` 的 full barrier 更轻量）；提及 JIT 逃逸分析（Escape Analysis）对锁消除的优化 —— 如果对象不会"逃逸"出当前线程，`synchronized` 在 JIT 编译后可能被完全消除；提及 `@Contended` 注解解决伪共享（False Sharing）对可见性的影响 —— 不是可见性问题但影响性能。
 
 ---
+
+<a name="Q13"></a>
 
 ## Q13：synchronized加锁后临界区抛出OOM或异常，锁自动释放还是手动处理？
 
@@ -650,6 +676,8 @@ synchronized (accountLock) {
 **加分项：** 提及 JVMTI（JVM Tool Interface）的 `MonitorContendedEnter` / `MonitorContendedEntered` 事件，可以用于监控线程争用锁的情况；提及 `-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly` 可以实际查看 JIT 编译后的 monitorenter/monitorexit 及相关异常表；提及 `Lock.lockInterruptibly()` 在异常场景下的优势 —— 可以被中断而不仅仅是抛出异常，适合需要优雅停机的长任务。
 
 ---
+
+<a name="Q14"></a>
 
 ## Q14：谈一谈你对CompletableFuture的理解。与Future相比，它解决了哪些痛点？
 
@@ -729,6 +757,8 @@ CompletableFuture<Void> result = CompletableFuture.allOf(stockF, userF, priceF)
 **加分项：** 提及 Java 21 的 Structured Concurrency（`StructuredTaskScope`，Preview/Incubator），是 `CompletableFuture.allOf()` 的进化 —— 提供了"结构化"的并发控制，子任务的生命周期被限定在父作用域中，出错时自动取消兄弟任务，比 `CompletableFuture` 的"忘记取消"更安全；提及 `CompletableFuture` 与响应式编程（Reactor/RxJava）的选型 —— 少于 3 层异步嵌套用 CF，超过 3 层或需要背压/流式处理考虑响应式。
 
 ---
+
+<a name="Q15"></a>
 
 ## Q15：多个子线程全部运行完后主线程才能往下走，有几种实现方式？CountDownLatch底层怎么实现？
 
@@ -815,6 +845,8 @@ head (dummy) <-> Node(main thread, waitStatus=SIGNAL) <-> Node(other thread)
 **加分项：** 对比 AQS 共享模式（`CountDownLatch`、`Semaphore`）与排他模式（`ReentrantLock`）在队列唤醒机制上的差异 —— 共享模式是链式传播唤醒（被唤醒的节点会继续唤醒下一个），排他模式只唤醒 head 的下一个节点；提及 `CountDownLatch` 在高并发下的一个性能优化 —— `doReleaseShared()` 中的"快路径"与自旋避免频繁 park/unpark 的开销；提及用 `Phaser` 替代 `CountDownLatch` 的场景 —— 多个阶段、动态注册参与者数量的协调。
 
 ---
+
+<a name="Q16"></a>
 
 ## Q16：ThreadLocal是什么？为什么使用？会产生什么问题？
 
