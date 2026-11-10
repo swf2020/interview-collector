@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：Transformer 的 Self-Attention 是怎么算的？为什么要除以根号 d_k？
 
 ### 考察点
@@ -53,6 +55,8 @@ def attention(Q, K, V):
 
 ---
 
+<a name="Q2"></a>
+
 ## Q2：Pre-Norm 和 Post-NNorm 哪个训练更稳定，为什么？
 
 ### 考察点
@@ -99,6 +103,8 @@ class PreNormBlock(nn.Module):
 **加分项：** 提到 GPT-3 的 "small residual initialization"（将残差分支最后一层乘以 `1/sqrt(N_layers)`）弥补了 Pre-Norm 表示能力的不足；提到 DeepNet 提出的 Post-LN + 缩放残差的方案；指出 LLaMA 3 采用 RMSNorm 替代 LayerNorm 提升计算效率。
 
 ---
+
+<a name="Q3"></a>
 
 ## Q3：RLHF 的训练流程是什么？
 
@@ -150,6 +156,8 @@ reward = R(y|x) - β * KL(π(y|x) || π_SFT(y|x))
 
 ---
 
+<a name="Q4"></a>
+
 ## Q4：大模型的幻觉问题怎么缓解？
 
 ### 考察点
@@ -191,6 +199,8 @@ reward = R(y|x) - β * KL(π(y|x) || π_SFT(y|x))
 **加分项：** 提到 Self-RAG 框架（模型自己决定是否检索、何时检索）；提到 RAGAS / ARES 等幻觉评测框架；提到 Citation-augmented generation 和 Verifiable generation；指出"知识截止日期"本质上是训练数据的时间边界，不是幻觉。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：Decoder-only 结构为什么成为主流？和 Encoder-Decoder 比有什么优势？
 
@@ -236,6 +246,8 @@ reward = R(y|x) - β * KL(π(y|x) || π_SFT(y|x))
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：Claude 和 GPT 各自的优势是什么？
 
 ### 考察点
@@ -280,6 +292,8 @@ reward = R(y|x) - β * KL(π(y|x) || π_SFT(y|x))
 **加分项：** 提到 Claude 的 Prompt Caching 对长 prompt 场景的成本优势（缓存命中后价格降 90%）；提到 GPT 的 `reasoning_effort` 参数和 o1/o3 的 Chain-of-Thought 推理能力；提到 Claude 的 tool use 已支持并行和动态 schema；指出模型能力差距在快速缩小，架构选择比模型选择更重要。
 
 ---
+
+<a name="Q7"></a>
 
 ## Q7：LoRA 的核心思路是什么？数学公式 W' = W + BA 的含义？
 
@@ -344,6 +358,8 @@ class LoRALayer(nn.Module):
 
 ---
 
+<a name="Q8"></a>
+
 ## Q8：LoRA 的秩（rank）如何选择？对效果有什么影响？
 
 ### 考察点
@@ -393,6 +409,8 @@ for r in ranks:
 **加分项：** 提到 LoRA 的 rank 可以和不同的 target module 配合使用（如只加在 attention 层 vs 同时加在 FFN 层）；提到 AdaLoRA 可以根据重要性动态分配 rank；提到一些研究表明某些层的权重更新实际上是高秩的（如 embedding 层），单一 rank 可能不是最优的。
 
 ---
+
+<a name="Q9"></a>
 
 ## Q9：QLoRA 和 LoRA 的区别？NF4 量化是什么？
 
@@ -456,6 +474,8 @@ model = AutoModelForCausalLM.from_pretrained(
 
 ---
 
+<a name="Q10"></a>
+
 ## Q10：全参数微调 vs LoRA vs QLoRA 的对比，各自适用什么场景？
 
 ### 考察点
@@ -508,6 +528,8 @@ model = AutoModelForCausalLM.from_pretrained(
 **加分项：** 提到 DoRA 可以作为 LoRA 的升级版在同等资源下获得更好效果；提到全参微调时可以用 LoRA 做 warmup 再放开全量参数；指出在实际生产中，先用 QLoRA 快速验证数据 pipeline，确认有效后再升级到 LoRA/全参是常见策略。
 
 ---
+
+<a name="Q11"></a>
 
 ## Q11：LoRA 应该应用到模型的哪些层？为什么？
 
@@ -573,6 +595,8 @@ config = LoraConfig(
 **加分项：** 提到 LORA-FA（Freeze A）只训练 B 矩阵进一步减少参数；提到 LoRA 在 embedding 层的应用效果不佳（高秩特性）；提到有研究表明对不同的层使用不同的 rank（AdaLoRA 的思路）可能比统一 rank 更优；指出 unsloth 通过只训练 q_proj 和 k_proj 实现了极致优化。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：DoRA 和 AdaLoRA 相比 LoRA 有什么改进？
 
@@ -651,6 +675,8 @@ W' = m * V / ||V||_c + BA
 
 ---
 
+<a name="Q13"></a>
+
 ## Q13：如果你想针对一个特定领域（如法律咨询）微调一个大模型，你需要准备什么样的数据？数据质量对微调结果的影响有多大？
 
 ### 考察点
@@ -683,6 +709,8 @@ W' = m * V / ||V||_c + BA
 **加分项：** 提到数据飞轮（Data Flywheel）概念——将模型上线后的用户反馈和人工纠错持续纳入训练数据形成正向循环；提到合成数据（Synthetic Data）在法律等专业领域的应用——用强模型生成初版数据再由专家修正，可以大幅降低标注成本；指出法律领域微调需要特别注意数据合规性（不包含真实当事人信息）和时效性（法条修订需及时更新）。
 
 ---
+
+<a name="Q14"></a>
 
 ## Q14：什么是"提示词工程"？请举例说明一个复杂的提示词通常包含哪些要素？
 
@@ -732,6 +760,8 @@ W' = m * V / ||V||_c + BA
 
 ---
 
+<a name="Q15"></a>
+
 ## Q15：在选择一个 LLM 模型时（比如 OpenAI 的 GPT-4o 和 Meta 的 LLaMA 3），你会从哪些维度进行评估和决策？
 
 ### 考察点
@@ -771,6 +801,8 @@ W' = m * V / ||V||_c + BA
 **加分项：** 提到模型选型不是一次性决策——建立持续的模型评估 pipeline，在新模型发布时自动评测，当新模型在业务评测集上显著超越当前模型时触发切换评估；提到 LMSys Chatbot Arena 的 Elo 评分可以作为模型能力快速参考，但不能替代业务场景评测；提到不同模型对 Prompt 的敏感度不同——换模型时通常需要调整 prompt（"Prompt Sensitivity" 问题），在选型评估中应包含 prompt 迁移成本。
 
 ---
+
+<a name="Q16"></a>
 
 ## Q16：多模态大模型的具体结构是什么？（视觉编码器 + 适配器/连接器 + LLM 生成三部分）
 
@@ -820,6 +852,8 @@ output = llm(inputs_embeds=input_embeds)          # LLM 生成
 
 ---
 
+<a name="Q17"></a>
+
 ## Q17：BERT 的 [CLS] token 能否直接作为句向量？各向异性问题是什么？
 
 ### 考察点
@@ -866,6 +900,8 @@ print(cos_sim)  # 最小相似度可能 > 0.8，说明各向异性严重
 
 ---
 
+<a name="Q18"></a>
+
 ## Q18：LoRA 为什么有效？低秩假设是什么意思？
 
 ### 考察点
@@ -901,6 +937,8 @@ print(cos_sim)  # 最小相似度可能 > 0.8，说明各向异性严重
 **加分项：** 提到 PiSSA（Principal Singular values and Singular vectors Adaptation）通过对预训练权重 W 做 SVD 分解，将主奇异向量初始化为 LoRA 的 A 和 B——这样 LoRA 训练一开始就在优化最重要的更新方向，收敛速度比随机初始化快 2-3 倍；提到一些研究表明并不是所有层的权重更新都是低秩的——FFN 的某些层（如 down_proj）可能需要更高的秩；提到 LoRA 的 rank 与训练数据量的关系——数据量越大，潜在的有效更新方向越多，需要越大的 rank 来捕捉。
 
 ---
+
+<a name="Q19"></a>
 
 ## Q19：QLoRA 的三大核心技术是什么？（NF4 量化/双重量化/分页优化器）
 
@@ -955,6 +993,8 @@ model = AutoModelForCausalLM.from_pretrained(
 **加分项：** 提到 NF4 的理论基础是 Lloyd-Max 量化器——在均方误差意义下对已知分布的最优量化；提到 QLoRA 论文发现了"量化解耦"现象——NF4 量化的误差与 LoRA 适配器的方向会自然正交，两者互不干扰，这是 QLoRA 效果接近 LoRA 的关键原因；提到 bitsandbytes 的 `bnb_4bit_compute_dtype` 参数选择——BF16 比 FP16 更适合，因为其更大的动态范围可以更好地容纳异常值。
 
 ---
+
+<a name="Q20"></a>
 
 ## Q20：LoRA 微调过拟合怎么解决？
 
@@ -1017,6 +1057,8 @@ TrainingArguments(
 **加分项：** 提到 weight decay 对 LoRA 的作用——标准 LoRA 训练通常不需要 weight decay（LoRA 本身有低秩正则化），但对严重过拟合的场景，添加 0.01-0.05 的 weight decay 可能有帮助；提到 LoRA 的 rank 和 dropout 的配合——rank 越大应使用越大的 dropout，经验公式 `dropout = min(0.01 * r, 0.2)`；指出过拟合不一定等于坏事——在一些封闭域 QA 场景（如内部 SOP 问答），过拟合到训练集可能恰恰是期望的行为（因为不存在"泛化到未知问题"的需求）。
 
 ---
+
+<a name="Q21"></a>
 
 ## Q21：单卡 24G 显存不足（微调 13B），如何优化？
 
@@ -1124,6 +1166,8 @@ accelerator = Accelerator(cpu=True)
 
 ---
 
+<a name="Q22"></a>
+
 ## Q22：灾难性遗忘如何缓解？
 
 ### 考察点
@@ -1151,6 +1195,8 @@ accelerator = Accelerator(cpu=True)
 **加分项：** 提到L2-SP（L2 penalty towards pre-trained weights）是最简单的正则化方法且有效的实践总结；提到MoE（混合专家）架构天然支持多领域扩展且各专家互不干扰，是架构层面抵御遗忘的方案；指出在实际生产中，AdaLoRA通过动态分配rank可以同时兼顾领域学习和通用能力保护；提到数据飞轮的概念——将上线后的用户反馈回流到通用数据池中，持续更新混合数据集，使得微调模型"永不遗忘"。
 
 ---
+
+<a name="Q23"></a>
 
 ## Q23：PPO vs DPO 流程差异？
 
@@ -1205,6 +1251,8 @@ L_DPO = -E[log σ(β * log(π_θ(y_w|x)/π_ref(y_w|x)) - β * log(π_θ(y_l|x)/�
 
 ---
 
+<a name="Q24"></a>
+
 ## Q24：LoRA 能否插入 LayerNorm 层？（不能，会破坏归一化）
 
 ### 考察点
@@ -1241,6 +1289,8 @@ L_DPO = -E[log σ(β * log(π_θ(y_w|x)/π_ref(y_w|x)) - β * log(π_θ(y_l|x)/�
 **加分项：** 提到RMSNorm（LLaMA系列使用的简化版LayerNorm）仅保留`x * γ / RMS(x)`操作，去掉均值中心化和β偏移，计算更高效，但同样不适合插入LoRA；提到如果确实要微调归一化参数，γ和β参数量极小（仅2×d_model），直接全参数训练即可，无需PEFT；指出DeepSeek-V2的MLA（Multi-head Latent Attention）中使用了类似低秩压缩K/V的思路，但操作对象是投影矩阵而非归一化层；Adapter可以在LN之后插入小型MLP模块，这在数学上等同于对归一化后的表示做微调，是更安全的选择。
 
 ---
+
+<a name="Q25"></a>
 
 ## Q25：NF4 为什么比 INT4 好？（针对正态分布设计）
 
@@ -1285,6 +1335,8 @@ NF4（NormalFloat 4-bit）比INT4（均匀4-bit量化）效果好，根本原因
 
 ---
 
+<a name="Q26"></a>
+
 ## Q26：MHA / MQA / GQA 三种注意力机制的区别？
 
 ### 考察点
@@ -1326,6 +1378,8 @@ MHA（Multi-Head Attention）、MQA（Multi-Query Attention）和GQA（Grouped-Q
 
 ---
 
+<a name="Q27"></a>
+
 ## Q27：大模型微调流程是怎样的？
 
 ### 考察点
@@ -1355,6 +1409,8 @@ MHA（Multi-Head Attention）、MQA（Multi-Query Attention）和GQA（Grouped-Q
 **加分项：** 提到数据飞轮（Data Flywheel）——上线后收集bad case，经人工修正后回流训练集，形成持续迭代闭环；提到合规性检查——金融/医疗等场景需确保训练数据不含PII（个人可识别信息），否则面临法律风险；指出unsloth等优化训练框架通过手写CUDA kernel和内存优化可将微调速度提升2-5倍；提到多轮对话数据的loss mask策略——仅对assistant回复部分计算loss，system和user部分mask掉，避免模型学习用户提问模式。
 
 ---
+
+<a name="Q28"></a>
 
 ## Q28：大模型意图识别是怎么做的？
 
@@ -1411,6 +1467,8 @@ response = llm.chat(messages, tools=tools)
 
 ---
 
+<a name="Q29"></a>
+
 ## Q29：解释下模型蒸馏和模型量化。
 
 ### 考察点
@@ -1462,6 +1520,8 @@ x'  = s * (x_q - z)                    # 整数->浮点（反量化，推理时�
 **加分项：** 提到渐进式蒸馏（Progressive Distillation）——分多步逐步压缩：Teacher → Mid-size → Student，比单步蒸馏效果好；提到数据增强蒸馏——教师不仅提供logits，还生成大量合成训练数据供学生学习；指出GPTQ的"二阶信息"指的是Hessian矩阵的逆，通过逐层求逆来补偿量化误差，这是它能达到接近无损压缩的数学基础；提到量化感知的蒸馏（QKD / Quantization-aware KD）——在蒸馏过程中模拟量化噪声，让学生模型天然适应低精度推理。
 
 ---
+
+<a name="Q30"></a>
 
 ## Q30：解释下全参数微调、LoRA、QLoRA 区别。
 
@@ -1529,6 +1589,8 @@ model = get_peft_model(model, LoraConfig(r=8, ...))  # 4-bit基座 + LoRA适配�
 
 ---
 
+<a name="Q31"></a>
+
 ## Q31：模型微调怎么评估效果？
 ### 考察点
 考察候选人能否从自动化指标、人工评估和业务落地三个层面构建完整的评估体系。
@@ -1556,6 +1618,8 @@ model = get_peft_model(model, LoraConfig(r=8, ...))  # 4-bit基座 + LoRA适配�
 - **自动构建评估集的方法**：用 LLM 根据种子数据生成类似风格的 QA 对，再人工过滤——可以低成本扩展评估集，但需注意生成数据的分布可能与真实用户分布不同（分布偏移问题）。
 
 ---
+<a name="Q32"></a>
+
 ## Q32：详述 Transformer 多头自注意力机制。
 ### 考察点
 考察候选人对 Transformer 核心机制的深层理解——不仅是公式复述，还要能解释"为什么多头"和"为什么有效"。
@@ -1581,6 +1645,8 @@ model = get_peft_model(model, LoraConfig(r=8, ...))  # 4-bit基座 + LoRA适配�
 - **稀疏注意力和线性注意力**：当序列长度超过 128K 时，即使是 FlashAttention 的 O(n²) 复杂度也难以承受。稀疏注意力（如 Sliding Window Attention）只关注局部窗口内的 token（将复杂度降到 O(n×w)），线性注意力使用 kernel trick 避免显式计算 QK^T 矩阵。这些是长上下文模型（如使用 Ring Attention 训练的模型）的关键技术。
 
 ---
+<a name="Q33"></a>
+
 ## Q33：prefix LM 和 causal LM 区别是什么？
 ### 考察点
 考察候选人对不同注意力掩码（attention mask）模式的理解，及其对模型行为和训练方式的影响。
@@ -1609,6 +1675,8 @@ model = get_peft_model(model, LoraConfig(r=8, ...))  # 4-bit基座 + LoRA适配�
 - **Encoder-Decoder 模型的演变**：T5 和 BART 等 Encoder-Decoder 模型天然支持双向编码 context，但架构复杂、参数利用率低，已逐渐被 Causal LM 统一替代。
 
 ---
+<a name="Q34"></a>
+
 ## Q34：如何让大模型处理更长的文本？
 ### 考察点
 考察候选人对长上下文扩展技术的系统性理解——从位置编码、注意力优化到工程部署。
@@ -1634,6 +1702,8 @@ model = get_peft_model(model, LoraConfig(r=8, ...))  # 4-bit基座 + LoRA适配�
 - **LongLoRA**：一种高效的微调方案，训练时使用 S²-Attn 将长序列分组做局部注意力（大幅降低训练显存），推理时再转回标准注意力，使得在有限资源下也能做长上下文微调。
 
 ---
+<a name="Q35"></a>
+
 ## Q35：领域数据训练后如何缓解模型遗忘通用能力？
 ### 考察点
 考察候选人对灾难性遗忘的理解及其在实践中的缓解策略——核心是"数据混合"和"训练策略"。
@@ -1662,6 +1732,8 @@ model = get_peft_model(model, LoraConfig(r=8, ...))  # 4-bit基座 + LoRA适配�
 - **学习率 Warmup 与 Cosine Decay 的遗忘影响**：Warmup 期间模型参数从预训练稳定点出发，逐渐升温，如果 warmup 步数设置不当（过长），会导致前期训练对通用能力的扰动更大。实践中的经验是 warmup 占训练总步数的 3-5% 较合适。
 
 ---
+<a name="Q36"></a>
+
 ## Q36：RAG 和 SFT 微调的区别是什么？什么时候该用哪个？对于 200 组左右的固定 QA 知识库你会选择 RAG、LoRA 微调还是长上下文直接输入？
 ### 考察点
 考察候选人能否结合实际场景（数据量、更新频率、可用资源）做出合理的 RAG vs SFT 技术选型。

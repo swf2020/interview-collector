@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：什么是 RAG（检索增强生成）？一个完整的 RAG 流程包含哪些关键步骤？请从数据准备到最终生成详细描述整个过程。
 
 ### 考察点
@@ -37,6 +39,8 @@ RAG（Retrieval-Augmented Generation，检索增强生成）是一种将信息�
 
 ---
 
+<a name="Q2"></a>
+
 ## Q2：RAG 和长上下文模型（如 1M token 窗口）的关系是什么？超长上下文模型出现后 RAG 架构的必要性是否会下降？
 
 ### 考察点
@@ -63,6 +67,8 @@ RAG 的核心价值不在于"弥补上下文的不足"，而在于**精准的信
 **加分项：** 介绍"大海捞针"（Needle in a Haystack）评测方法，以及 Anthropic 提出的上下文工程（Context Engineering）概念——用检索决定"放什么进去"，用长窗口容纳"放进去的内容"。Agentic RAG 中的多步检索也依赖长上下文维持推理链。
 
 ---
+
+<a name="Q3"></a>
 
 ## Q3：Chunking 策略有哪些？不同场景下怎么选？长文档切片的粒度一般怎么选择？为什么要有重叠区域？
 
@@ -95,6 +101,8 @@ Chunking 是 RAG 系统中直接影响召回质量的核心预处理步骤。常
 
 ---
 
+<a name="Q4"></a>
+
 ## Q4：为什么需要 Rerank 模型？向量检索已经计算了相似度，为什么还要引入交叉编码器进行重排？Rerank 后的截断策略是怎么设计的？
 
 ### 考察点
@@ -123,6 +131,8 @@ Chunking 是 RAG 系统中直接影响召回质量的核心预处理步骤。常
 **加分项：** 提及 LLM-as-a-Reranker（用 GPT-4 等强模型做 pointwise/pairwise/Listwise 排序）、RankGPT、以及 ColBERT（延迟交互，在 Bi-Encoder 和 Cross-Encoder 之间取得折衷）等前沿方案。工程上关注多路召回融合后的 Rerank 排序一致性。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：怎么评估 RAG 系统的效果？RAG 系统的评测维度有哪些？如何构建评测数据集？
 
@@ -159,6 +169,8 @@ RAG 系统的评测是一个多层次工程，通常分为**检索端**和**生�
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：稠密向量和稀疏向量的区别是什么？各自适合什么场景？向量检索和关键词检索是怎么组合的（混合检索）？
 
 ### 考察点
@@ -190,6 +202,8 @@ RAG 系统的评测是一个多层次工程，通常分为**检索端**和**生�
 
 ---
 
+<a name="Q7"></a>
+
 ## Q7：RAG 中如果没有召回到相关知识，如何约束模型避免胡编？RAG 幻觉检测与控制怎么做？
 
 ### 考察点
@@ -219,6 +233,8 @@ RAG 系统中避免胡编需要构建多层防线：
 **加分项：** 提及 G-Eval、UniEval 等参考无关的幻觉评估指标；RAGAS Faithfulness 的实现原理（将答案拆为原子陈述后用 NLI 验证）；DeepEval 框架的 hallucination metric 集成。多轮对话中的滚动幻觉检测——每轮都重新验证之前引用的上下文是否依然有效。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：Query 改写你是怎么做的？解决什么问题？如何实现？
 
@@ -250,6 +266,8 @@ Query 改写是 RAG 系统中连接"用户自然语言输入"与"知识库检索
 **加分项：** 提及 Multi-Query Retrieval（从一个 Query 生成多个改写版本并发检索合并结果）、Query2Doc（用小模型生成伪文档再抽取关键词做稀疏检索）、Step-Back Prompting（先抽象成"后退问题"再做检索）。LangChain 的 MultiQueryRetriever 和 LlamaIndex 的 Query Transform 模块的对比。
 
 ---
+
+<a name="Q9"></a>
 
 ## Q9：HyDE（Hypothetical Document Embeddings）的原理和应用场景？在 query 模糊时是如何提升召回效果的？
 
@@ -284,6 +302,8 @@ HyDE（Hypothetical Document Embeddings）的核心洞察是：**用户 Query �
 **加分项：** 提及 HyDE 的变体方案——Reverse HyDE（用知识库文档生成假设性 Query 做索引端增强）、HyDE + 对比学习（用正负例训练专门的假设文档生成模型）、以及与 Query2Doc 的对比（Query2Doc 生成的伪文档用于稀疏检索）。结合 Rerank 做二次过滤可缓解 HyDE 脑补跑偏的风险。
 
 ---
+
+<a name="Q10"></a>
 
 ## Q10：RAG 与小模型微调的适用场景分别是什么？全参数微调 vs PEFT（LoRA/Adapter 等）如何选择？
 
@@ -321,6 +341,8 @@ HyDE（Hypothetical Document Embeddings）的核心洞察是：**用户 Query �
 **加分项：** 提及 RAFT（检索增强微调）的论文原理和适用场景；LoRA+ 和 DoRA 等 LoRA 改进方案；vLLM 对 LoRA 热切换的推理优化（多租户共用一个基座模型）。Unsloth 等微调加速框架的对比。RAG 和微调的融合架构：微调做意图路由和格式化，RAG 做知识供给。
 
 ---
+
+<a name="Q11"></a>
 
 ## Q11：RAG 的常见失败场景有哪些？如何解决？RAG 系统在实际部署中可能面临哪些挑战？
 
@@ -367,6 +389,8 @@ HyDE（Hypothetical Document Embeddings）的核心洞察是：**用户 Query �
 **加分项：** 讨论 RAG 的 Fail-Safe 设计：多层降级策略（检索失败 → 提示模板 → 人工兜底）。线上监控体系——召回率/生成质量/延迟的实时监控和告警。以及 Langfuse、Phoenix Arize 等 RAG 可观测性平台的选型。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：Self-RAG 和 CRAG 等自适应检索机制的区别？什么是迭代检索（Iterative Retrieval）？与普通 RAG 有何区别？
 
@@ -415,6 +439,8 @@ Self-RAG 通过训练（在标注了 reflection token 的数据上微调 LM）�
 
 ---
 
+<a name="Q13"></a>
+
 ## Q13：什么是 RAG？RAG、微调和长上下文模型三者的区别和适用场景分别是什么？
 
 ### 考察点
@@ -447,6 +473,8 @@ RAG（Retrieval-Augmented Generation，检索增强生成）是让 LLM 在回答
 
 ---
 
+<a name="Q14"></a>
+
 ## Q14：了解搜索系统吗？和 RAG 有什么区别？稀疏检索 vs 稠密检索的核心区别是什么？
 
 ### 考察点
@@ -469,6 +497,8 @@ RAG（Retrieval-Augmented Generation，检索增强生成）是让 LLM 在回答
 **加分项：** 学习型稀疏检索（Learned Sparse，如 SPLADE）通过学习得到稀疏但带语义的权重表示，是两者的折中。对比 DPR、ANCE、TAS-B 等稠密检索训练策略的区别。混合检索的融合策略除了 RRF，还有线性加权、LambdaMART 等。
 
 ---
+
+<a name="Q15"></a>
 
 ## Q15：OCR 结果有噪声或错误时，你是怎么做纠错或提升解析质量的？
 
@@ -503,6 +533,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 
 ---
 
+<a name="Q16"></a>
+
 ## Q16：多模态检索中，图像和文本向量不在同一空间时，如何实现对齐？
 
 ### 考察点
@@ -530,6 +562,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 
 ---
 
+<a name="Q17"></a>
+
 ## Q17：长文档为什么一定要切 chunk 再做向量化？不切会有什么问题？
 
 ### 考察点
@@ -554,6 +588,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 **加分项：** 讲清 chunk 大小是检索粒度的核心杠杆——chunk 越小，检索越精准但丢失上下文；chunk 越大，语义完整但定位模糊。实践中结合 Small-to-Big 策略（小 chunk 检索，大窗口返回）和 Multi-Vector 方案（每个 chunk 生成摘要向量 + 原文向量混合检索）。ColBERT 的 Late Interaction 机制做 token 级匹配，替代传统 chunking 思路。
 
 ---
+
+<a name="Q18"></a>
 
 ## Q18：余弦相似度和欧氏距离在高维空间中的差异是什么？实际怎么选？
 
@@ -587,6 +623,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 
 ---
 
+<a name="Q19"></a>
+
 ## Q19：文档发生局部更新时，如何做增量索引而不是全量重建？
 
 ### 考察点
@@ -616,6 +654,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 **加分项：** 讨论 ES 的近实时（NRT）刷新机制在向量索引中的类比；Milvus 的 Data Manipulation Language（DML）支持和 Upsert 语义；如何利用 Kafka/Flink 构建实时增量索引 Pipeline。变更影响面分析：修改一个文档可能导致需要重建与该文档语义关联的 FAQ 索引或知识图谱关系。
 
 ---
+
+<a name="Q20"></a>
 
 ## Q20：向量检索中 Top-K 设置过大或过小分别会带来什么问题？
 
@@ -653,6 +693,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 **加分项：** 讨论 Recall@K 曲线——通常在 K=10-20 后 Recall 增长进入平台期，是选择 K 的经验参考。多路召回（向量 + BM25 + 知识图谱）各自的 K 值如何取、融合后的总 K 如何控制。LangChain/LlamaIndex 中 RetrievalQA 链的 k 参数底层实现。
 
 ---
+
+<a name="Q21"></a>
 
 ## Q21：Agent 一般在什么阶段去查询向量知识库？通过什么方式去查询？查询知识库的工具函数其标准输入和输出是什么？
 
@@ -708,6 +750,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 
 ---
 
+<a name="Q22"></a>
+
 ## Q22：系统如何实现图像识别等多模态功能？为什么不直接使用多模态大模型？
 
 ### 考察点
@@ -745,6 +789,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 
 ---
 
+<a name="Q23"></a>
+
 ## Q23：多模态预处理中，图片在 RAG 系统里是如何向量化检索的？多模态预处理环节的技术难点是什么？
 
 ### 考察点
@@ -777,6 +823,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 **加分项：** 对比 ColPali（Vision-Language Late Interaction）与传统 Preprocessing 方案在图文档检索上的效果差异。多模态文档解析流水线的工程实现——Unstructured、LlamaParse、Marker 等开源工具的技术原理和选型对比。评测方法：图文对齐的准确率评测框架（判断提取的文本描述是否忠实于原始图片内容）。
 
 ---
+
+<a name="Q24"></a>
 
 ## Q24：如何杜绝跨场景召回相似步骤的问题，具体实现方式是什么？
 
@@ -823,6 +871,8 @@ OCR 噪声通常分为三类：**字符级错误**（形近字误识别，如"�
 
 ---
 
+<a name="Q25"></a>
+
 ## Q25：介绍评估精度和召回率所采用的框架，以及召回率的具体计算细节？
 
 ### 考察点
@@ -854,6 +904,8 @@ RAGAS 的 Context Precision 则是衡量"检索到的上下文中，真正与答
 **加分项：** 介绍 RAGAS Context Recall 的 LLM 判定 prompt 模板设计细节（如何提取 claims、如何做 entailment 判定、Few-shot 示例构造）；对比 Context Recall 与 Answer Correctness 的区别——前者只看覆盖，后者还看语义一致性；提及人工标注中 Cohen's Kappa 系数用于衡量标注一致性，以保证自动化指标可信度；工程实践中 Context Recall 阈值一般设在 0.7-0.8 以上才算合格。
 
 ---
+
+<a name="Q26"></a>
 
 ## Q26：代码助手在代码检索时，如何高效找到与问题相关的依赖并提供给大模型？现阶段为何少有框架做代码依赖相关的优化工作？
 
@@ -888,6 +940,8 @@ RAGAS 的 Context Precision 则是衡量"检索到的上下文中，真正与答
 
 ---
 
+<a name="Q27"></a>
+
 ## Q27：不同数据表量级下，Text2SQL 的技术选型差异是什么？
 
 ### 考察点
@@ -915,6 +969,8 @@ schema 总 token 量超过单次上下文窗口或推理成本很高。核心矛
 **加分项：** 提及 DTS-SQL（Decomposed Tree-of-thought SQL）的树状分解思路；MAC-SQL 的多 Agent 协作方案（Selector → Decomposer → Refiner）；Vanna 的在线训练模式（基于历史问答对持续改进检索）；Schema Linking 的 Embedding vs Keyword vs LLM 三路对比；以及在 Text2SQL 中加入 SQL 执行反馈循环的 Self-Debugging 范式。
 
 ---
+
+<a name="Q28"></a>
 
 ## Q28：为何要将数据表每一行数据向量化？行级向量化与表元数据（Metadata）检索的优劣对比是什么？
 
@@ -951,6 +1007,8 @@ schema 总 token 量超过单次上下文窗口或推理成本很高。核心矛
 **加分项：** 提及行级向量化的序列化模板设计（如何把一行转化为有意义的自然语言，如模板 `"{列名}为{值}"` 组合）；对比行级向量化与列级向量化的差异（列级保留字段级语义、适合按字段查找场景）；STaR、DeepDB 等将行级语义检索与 Text2SQL 融合的学术方案；向量数据库的标量过滤（scalar filtering）与行级向量的混合查询实现。
 
 ---
+
+<a name="Q29"></a>
 
 ## Q29：Text2SQL 业界常用方案、技术框架与难点你了解哪些？
 
@@ -999,6 +1057,8 @@ schema 总 token 量超过单次上下文窗口或推理成本很高。核心矛
 
 ---
 
+<a name="Q30"></a>
+
 ## Q30：结构化数据用固定分块的原因？什么场景不适合固定分块？标点分块如何解决语义割裂问题？
 
 ### 考察点
@@ -1037,6 +1097,8 @@ schema 总 token 量超过单次上下文窗口或推理成本很高。核心矛
 
 ---
 
+<a name="Q31"></a>
+
 ## Q31：加重排后效果变差的原因是什么？
 
 ### 考察点
@@ -1063,6 +1125,8 @@ schema 总 token 量超过单次上下文窗口或推理成本很高。核心矛
 **加分项**：讨论 LLM-as-a-Reranker 在特定场景优于专用 Reranker 的原因（LLM 理解领域上下文能力强）。通过数据飞轮构建领域 Reranker 训练集——收集线上用户反馈（点赞/踩）作为正负例。介绍 RankGPT（用 GPT-4 做 Listwise 排序）与传统 Cross-Encoder 的效果对比。
 
 ---
+
+<a name="Q32"></a>
 
 ## Q32：向量数据库检索出来的历史信息，如果语义相关但时间太久，能直接用吗？
 
@@ -1094,6 +1158,8 @@ schema 总 token 量超过单次上下文窗口或推理成本很高。核心矛
 **加分项**：建立时效性监控 Dashboard——按文档新鲜度分布统计查询覆盖度，若超过 X% 的查询返回平均年龄 > 6 个月的内容，触发知识库更新告警。时效性评测——在评测集中加入时间敏感的 query（如"2025 年的税率是多少？"），验证 RAG 是否能优先召回最新文档。
 
 ---
+
+<a name="Q33"></a>
 
 ## Q33：如何评估 Rerank 的有效性？有什么指标吗？
 
@@ -1141,6 +1207,8 @@ A/B 测试对比有/无 Rerank 两条链路：用户满意度评分、点赞/踩
 
 ---
 
+<a name="Q34"></a>
+
 ## Q34：检索策略有哪些？向量匹配的计算指标有哪些？
 
 ### 考察点
@@ -1187,6 +1255,8 @@ A/B 测试对比有/无 Rerank 两条链路：用户满意度评分、点赞/踩
 **加分项**：对比讨论 RRF（Reciprocal Rank Fusion）、线性加权、LambdaMART 等融合策略在不同检索场景的效果差异。MPNet 和 E5 等模型训练时使用的对比损失对相似度度量的隐含要求（用 cosine loss 训练的模型必须用 cosine 检索）。介绍 Learned Sparse（SPLADE）作为稀疏-稠密折衷方案。
 
 ---
+
+<a name="Q35"></a>
 
 ## Q35：Embedding 模型怎么选？怎么微调？向量数据库怎么选？
 
@@ -1257,6 +1327,8 @@ A/B 测试对比有/无 Rerank 两条链路：用户满意度评分、点赞/踩
 
 ---
 
+<a name="Q36"></a>
+
 ## Q36：多跳检索（Multi-hop RAG）的实现思路？
 
 ### 考察点
@@ -1322,6 +1394,8 @@ IRCoT 的精妙之处在于将检索动作自然嵌入推理流——检索不�
 **加分项**：讨论 Self-Ask（让 LLM 自问自答地分解问题）与 Multi-hop RAG 的关系。使用 DSPy 框架自动化多跳 RAG 的 prompt 优化。对比深度搜索（Deep Search）中 Tree-of-Thought 式的多分支探索与线性多跳的差异——复杂问题可能需要同时探索多条推理路径，最后合并结果。
 
 ---
+<a name="Q37"></a>
+
 ## Q37：为什么需要父子索引？Re-rank 后一般返回几个块？为什么？
 
 ### 考察点
@@ -1340,6 +1414,8 @@ Re-rank 后一般返回 3-5 个块。原因有四：（1）Cross-Encoder 的评�
 **加分项**：讨论 Small-to-Big 检索（LlamaIndex 的节点检索模式）和 Sentence Window Retrieval（以目标句子为中心取窗口）作为父子索引的变体。介绍 Multi-Vector 策略——一个文档可对应多个向量表示（摘要向量、关键词向量、不同粒度的 chunk 向量），进一步提升在不同 query 类型下的召回覆盖度。
 
 ---
+<a name="Q38"></a>
+
 ## Q38：摘要生成用什么模型？摘要质量怎么保证？
 
 ### 考察点
@@ -1358,6 +1434,8 @@ Re-rank 后一般返回 3-5 个块。原因有四：（1）Cross-Encoder 的评�
 **加分项**：讨论 Chain-of-Density（CoD）提示策略——引导 LLM 多轮迭代地生成密度递增的摘要。介绍 LLM-as-Judge 的摘要评估方案：约定评分标准（1-5 分），让 GPT-4 担任评估官给出细粒度评分。提到 Long Context 模型直接生成摘要与分块摘要后拼接两种范式的优劣对比——前者保证跨块的逻辑连贯性，后者保证信息不遗漏。
 
 ---
+<a name="Q39"></a>
+
 ## Q39：如果做 Code-RAG，应该怎么做？
 
 ### 考察点
@@ -1376,6 +1454,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：讨论 Fill-in-the-Middle（FIM）在 Code-RAG 生成阶段的应用——让 LLM 在代码片段上下文中补全。提到 BM25 + Code Embedding 混合检索在变量名精确匹配场景的互补优势。对比 Code Search（Sourcegraph/GitHub Code Search）和 Code-RAG 的区别：前者是符号级/文本级检索，后者追求语义级检索+生成。
 
 ---
+<a name="Q40"></a>
+
 ## Q40：有关联关系的文档怎么做 RAG？行业黑话或内部术语文档怎么做 RAG？
 
 ### 考察点
@@ -1394,6 +1474,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：讨论 GraphRAG（微软）的全局/局部检索双重模式在关联文档场景的落地。分析 ColBERT 的 late interaction（Token-level 交互）为何对术语密集型检索更友好——因为术语本身作为 token 直接参与匹配。提到多义词术语消歧——同一术语在不同上下文中的不同含义，需要用上下文窗口辅助判断当前应映射到哪个标准表达。
 
 ---
+<a name="Q41"></a>
+
 ## Q41：什么是查询改写？什么是查询扩展？什么是自查询？
 
 ### 考察点
@@ -1418,6 +1500,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：讨论 Multi-Query Retrieval 作为查询扩展的工程实现（并行检索多条改写 query，合并去重）。提到意图识别在查询改写中的作用——事实型查询做精准改写，探索型查询做广泛扩展。Analyze 假设文档 Embedding（HyDE）与查询扩展的内在联系——本质上也是扩展的一种特殊形式。
 
 ---
+<a name="Q42"></a>
+
 ## Q42：在构建知识库时，文本切块策略至关重要。你会如何选择合适的切块大小和重叠长度？这背后有什么权衡？
 
 ### 考察点
@@ -1438,6 +1522,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：讨论 Semantic Chunking 的原理——计算相邻句子的 Embedding 余弦相似度，在相似度下降幅度超过阈值的点切分，实现语义边界感知的动态切块。提到 Agentic Chunking——用 LLM 动态判断语义完整的切分位置，适合对质量要求极高的结构化文档。对比 LangChain RecursiveCharacterTextSplitter（基于字符分隔符的递归切分）和 LlamaIndex SentenceSplitter（基于句子 token 数的切分）的工程取舍。
 
 ---
+<a name="Q43"></a>
+
 ## Q43：如何选择一个合适的嵌入模型？评估一个 Embedding 模型的好坏有哪些指标？
 
 ### 考察点
@@ -1456,6 +1542,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：了解 Matryoshka Embedding 原理——在训练时对不同截断维度的子向量同时施加损失函数，使模型学到多粒度的层级表示，推理时可按需截断维度而无需重新训练。了解 LLM-based Embedding（如直接用 GPT/Claude 生成嵌入向量）的趋势和适用场景——质量超高但延迟和成本是传统 Embedding 模型的 100-1000 倍，适合离线评测或对召回质量要求极高的场景。
 
 ---
+<a name="Q44"></a>
+
 ## Q44：除了基础的向量检索，你还知道哪些可以提升 RAG 检索质量的技术？
 
 ### 考察点
@@ -1478,6 +1566,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：介绍 RAPTOR（Recursive Abstractive Processing for Tree-Organized Retrieval）——对文档进行递归摘要聚类构建树状索引，支持跨粒度的多尺度检索，在 multi-hop 问题上效果突出。提到 Contextual Retrieval——Anthropic 提出的对每个 chunk 添加上下文前缀（文档标题、章节摘要）的方法，实验证明可显著降低检索失败率。
 
 ---
+<a name="Q45"></a>
+
 ## Q45：请解释"Lost in the Middle"问题。它描述了 RAG 中的什么现象？有什么方法可以缓解这个问题？
 
 ### 考察点
@@ -1498,6 +1588,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：了解 StreamingLLM 和 LongRoPE 等学术工作如何从架构层面解决注意力分布不均的问题。提到 LM-Infinite（Han et al., 2024）提出的 λ 形注意力掩码——在保留首尾 token 的同时，通过间隔采样中间 token 控制注意力分散，使模型在无限长输入上仍能保持推理能力。
 
 ---
+<a name="Q46"></a>
+
 ## Q46：在什么场景下，你会选择使用图数据库或知识图谱来增强或替代传统的向量数据库检索？
 
 ### 考察点
@@ -1520,6 +1612,8 @@ Code-RAG 与传统文本 RAG 有三个根本差异：（1）代码有严格的�
 **加分项**：了解 Property Graph（Neo4j/LangChain GraphCypherQAChain）和 RDF 三元组（Apache Jena/Amazon Neptune）两种知识图谱存储模型的差异和选择。了解 LlamaIndex 的 KnowledgeGraphIndex 和 LangChain 的 GraphCypherQAChain 的工程化实践。提到 LLM + GNN（图神经网络）联合推理的前沿方向。
 
 ---
+<a name="Q47"></a>
+
 ## Q47：传统的 RAG 流程是"先检索后生成"，你是否了解一些更复杂的 RAG 范式，比如在生成过程中进行多次检索或自适应检索？
 
 ### 考察点
@@ -1548,6 +1642,8 @@ Naive RAG 的"一次检索一次生成"模式在复杂场景中暴露出明显�
 **加分项**：了解 RQ-RAG（Retrieval-augmented Query-Rewriting RAG）——将复杂问题显式拆解为多个可检索的子问题，迭代检索后整合回答。提到 IRCoT（Interleaving Retrieval with Chain-of-Thought）——将 CoT 推理与检索交替进行，每步推理后检索相关知识验证，适合多跳推理。对比 DSPy 框架如何通过声明式编程优化 RAG Pipeline 中的检索策略编排。
 
 ---
+<a name="Q48"></a>
+
 ## Q48：知道或者使用过哪些开源 RAG 框架比如 Ragflow？如何选择合适场景？
 
 ### 考察点
@@ -1574,6 +1670,8 @@ Naive RAG 的"一次检索一次生成"模式在复杂场景中暴露出明显�
 **加分项**：了解 RAG 框架的核心架构差异——LCEL（LangChain）、Agent/Workflow（Dify）、Query Pipeline（Haystack）、Ingestion Pipeline（LlamaIndex）四种编排范式。提到 Agent-Computer Interface（ACI）在框架中的实现——工具定义、函数签名、结果回写机制。推荐关注 DSPy——与其手动编排 Pipeline，不如通过声明式编程让编译器自动优化，这是 RAG 系统从"手工调参"走向"自动优化"的关键趋势。
 
 ---
+<a name="Q49"></a>
+
 ## Q49：RAG 召回优化：你们 RAG 召回存在什么问题？怎么优化的？用的什么向量数据库？怎么保证召回的准确性避免 Agent 答非所问？
 
 ### 考察点
@@ -1596,6 +1694,8 @@ Naive RAG 的"一次检索一次生成"模式在复杂场景中暴露出明显�
 **加分项**：了解 Multi-Vector Embedding（如 ColBERT 的 token-level embedding）与 Single-Vector 的差异，在需要细粒度匹配的场景（如法律条款检索）效果显著。提到反思机制（Reflection）——Agent 拿到召回结果后先自检"这些信息是否足以回答问题"，不足则触发二次检索或澄清询问，避免在信息不充分时强行回答。
 
 ---
+<a name="Q50"></a>
+
 ## Q50：Dify 的 Knowledge Base（知识库）功能是如何工作的？它和 RAG 技术之间是什么关系？
 
 ### 考察点
@@ -1616,6 +1716,8 @@ Dify 知识库与 RAG 技术的关系：Dify 知识库是 RAG 技术的产品化
 **加分项**：了解 Dify 知识库的高级模式——"Q&A 分段模式"，允许用户将文档预拆分为问答对，检索时直接匹配问题返回答案，比传统 chunk 检索更精准。提到 Dify 的 Metadata Filtering 能力——通过对文档打标签（如版本号、产品线、语言等元数据），在检索时做前置过滤，缩小检索范围，在大型知识库场景下效果显著。
 
 ---
+<a name="Q51"></a>
+
 ## Q51：当一个基于 RAG 的问答系统回答错误时，你会如何排查问题？可能的原因有哪些？
 
 ### 考察点
@@ -1640,6 +1742,8 @@ Dify 知识库与 RAG 技术的关系：Dify 知识库是 RAG 技术的产品化
 **加分项**：提到"RAG 断点调试"概念——不是在回答错误后才排查，而是在开发阶段就构建好评测集（Golden Dataset），每次策略变更后自动跑回归评测，确保改动不会引入新问题。了解 RAGAS 等自动评测框架的指标（Context Precision、Context Recall、Faithfulness、Answer Relevancy）在故障排查中的使用——当 Faithfulness 低但 Context Recall 高时，问题在 LLM 生成侧而非检索侧。
 
 ---
+<a name="Q52"></a>
+
 ## Q52：RAG 落地时，数据清洗与切分的核心要点和避坑方法有哪些？
 
 ### 考察点
@@ -1660,6 +1764,8 @@ Dify 知识库与 RAG 技术的关系：Dify 知识库是 RAG 技术的产品化
 **加分项**：了解 Vision-Powered Parsing——对于复杂排版的 PDF（尤其是学术论文、财务报告），传统解析器效果差，可用多模态 LLM（如 GPT-4V、Qwen-VL）直接"看"页面图片输出结构化 Markdown，但成本较高，适合高质量要求的小规模场景。提到 Agentic Chunking——用 LLM Agent 动态决定每条内容"应该放在哪里、和什么相邻"，而非预设静态规则。
 
 ---
+<a name="Q53"></a>
+
 ## Q53：多模态用户信息的存储与使用方案？
 
 ### 考察点
@@ -1682,6 +1788,8 @@ Dify 知识库与 RAG 技术的关系：Dify 知识库是 RAG 技术的产品化
 **加分项**：了解 Magic Pocket 或 BridgeTower 等跨模态对齐模型，可将文本和图片映射到同一向量空间实现统一检索，省去多 Collection 的管理复杂度。提到多模态 RAG 的挑战——不同模态的语义 gap 仍然存在，纯向量相似度匹配有时不如"先转文字再检索"准确，需要设计回退策略（Fallback Strategy），向量检索分数低时自动降级为 OCR/ASR 转换后的文本检索。
 
 ---
+<a name="Q54"></a>
+
 ## Q54：多模态知识检索的实现方式？
 
 ### 考察点
@@ -1706,6 +1814,8 @@ Dify 知识库与 RAG 技术的关系：Dify 知识库是 RAG 技术的产品化
 **加分项**：了解 Multi-Vector 多模态检索（如 ColPali），它不像 CLIP 那样为整张图生成一个向量，而是为 PDF 页面的每个 patch 生成一个向量（类似 ColBERT 的 token-level 思想），在图文混排的文档检索场景（如学术论文、设计文档）中效果远优于传统方案。提到 Agentic Multimodal Retrieval——让 Agent 自主决定"看到这张图后是否需要进一步放大局部"、"检索到的视频是否需要快进到关键帧"，而非一次性检索返回结果就结束。
 
 ---
+<a name="Q55"></a>
+
 ## Q55：什么是难负例（Hard Negatives）？如何挖掘？
 
 ### 考察点
@@ -1732,6 +1842,8 @@ Dify 知识库与 RAG 技术的关系：Dify 知识库是 RAG 技术的产品化
 **加分项**：了解难负例的"假阳性风险"——在自动化挖掘中，可能误将实际上相关的文档标为难负例（标注噪声），需引入人工校验环节或用多模型投票机制降低误标率。提到 Curriculum Learning 策略——训练初期用简单负例建立基本判别能力，中后期逐步引入难负例进行精细调优，避免早期训练崩溃。
 
 ---
+<a name="Q56"></a>
+
 ## Q56：ColBERT 的 Late Interaction 机制是什么？
 
 ### 考察点
@@ -1758,6 +1870,8 @@ ColBERT 的 Late Interaction 机制是介于 Cross-Encoder（全交互，精度�
 **加分项**：了解 ColBERT v2——通过残差压缩（Residual Compression）进一步将索引空间缩小 6-10 倍，同时引入去噪训练增强鲁棒性。了解 ColPali——将 ColBERT 的 Late Interaction 思想推广到视觉领域，为 PDF 页面的每个图像 patch 生成向量，实现图文混排文档的多模态 Token 级检索。
 
 ---
+<a name="Q57"></a>
+
 ## Q57：RAG 如何处理多文档冲突信息？
 
 ### 考察点
@@ -1790,6 +1904,8 @@ RAG 中的多文档信息冲突是指检索到的多个文档对同一问题给�
 **加分项**：提到 LLM-as-Judge 用于冲突消解——用另一个独立 LLM 作为仲裁者，读取冲突文档和候选答案，输出裁决结果和理由。了解 RAFT（Retrieval Augmented Fine-Tuning）中的冲突感知训练——在微调数据中故意加入冲突文档对，训练模型在"看到矛盾信息时学会说不知道"而非盲目选一个。
 
 ---
+<a name="Q58"></a>
+
 ## Q58：如何优化长文档的 RAG 检索效果？
 
 ### 考察点
@@ -1827,6 +1943,8 @@ RAG 中的多文档信息冲突是指检索到的多个文档对同一问题给�
 **加分项**：了解 RAPTOR 的递归摘要树——对长文档建立层次化摘要树（叶子是原始 chunk，上层是 chunk 组成的 cluster 的摘要），检索时自顶向下遍历树，可同时回答"细节查询"和"概要查询"。提到 Long-Context LLM 的挑战——即使 Gemini 1.5 Pro 支持百万 Token 上下文，"大海捞针"问题依然存在，精准检索 + 精准上下文比盲目塞全文更可靠。
 
 ---
+<a name="Q59"></a>
+
 ## Q59：RAG 如何适配实时更新的知识库？
 
 ### 考察点
@@ -1859,6 +1977,8 @@ RAG 中的多文档信息冲突是指检索到的多个文档对同一问题给�
 **加分项**：提到 Near-Real-Time RAG 的双写架构——检索请求同时查询"主索引"和"近实时增量索引"（小规模热数据），合并去重后返回，达到秒级新鲜度。了解索引 A/B 切换方案——在后台构建新版本索引，构建完成后通过别名（Alias）原子切换，实现"用户无感知"的索引更新。
 
 ---
+<a name="Q60"></a>
+
 ## Q60：RAGAS 评估框架四大指标是什么？
 
 ### 考察点
@@ -1885,6 +2005,8 @@ RAGAS（Retrieval Augmented Generation Assessment）是目前最主流的 RAG �
 **加分项**：了解 RAGAS 的指标可组合为自定义评估 pipeline，支持通过 RAGAS Metrics 接口扩展自定义指标（如 Summarization Score、Harmfulness）。提到其他评估框架的互补维度：TruLens 的 Groundedness 评估、DeepEval 的 Contextual Relevancy，以及人工评估的不可替代性（尤其是在垂直领域专业知识场景下）。
 
 ---
+<a name="Q61"></a>
+
 ## Q61：设计一个多租户 RAG 系统，竞对之间数据必须完全隔离。
 
 ### 考察点
@@ -1923,6 +2045,8 @@ RAGAS（Retrieval Augmented Generation Assessment）是目前最主流的 RAG �
 **加分项**：提到 Confidential Computing（机密计算）方案——对安全要求极高的场景（如金融行业竞对隔离），可使用 Intel SGX/TDX 或 AMD SEV 在可信执行环境中运行 Embedding 和检索逻辑，即使基础设施运维人员也无法访问明文数据。了解向量数据库的 Partition Key 功能（如 Milvus 2.3+ 的 Partition Key + Clustering Key）来实现租户级物理隔离与高性能检索的统一。
 
 ---
+<a name="Q62"></a>
+
 ## Q62：向量数据库的 ANN（近似最近邻）是什么？HNSW 和 IVF 索引原理是什么？HNSW 和 IVFFLAT 的区别是什么？
 
 ### 考察点

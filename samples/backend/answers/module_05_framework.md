@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：平时有用Spring框架？IOC和AOP是什么？
 
 ### 考察点
@@ -26,6 +28,8 @@ Spring是一个Java企业开发的事实标准，日常开发中最核心的就�
 **加分项：** 在构造函数注入里调用被@Async/@Transactional增强的方法是不生效的，因为构造时机早于代理创建；同一类内非代理方法调用@Transactional方法也会让事务失效，因为绕过了AOP代理。生产上建议用构造函数注入+自注入（注入self引用）或重构到独立Bean来规避。
 
 ---
+
+<a name="Q2"></a>
 
 ## Q2：Spring Boot项目里为什么一般不用new创建服务对象，而是交给容器？
 
@@ -58,6 +62,8 @@ Spring是一个Java企业开发的事实标准，日常开发中最核心的就�
 
 ---
 
+<a name="Q3"></a>
+
 ## Q3：Controller/Service/Repository三层架构的功能是什么？各层之间如何交互？
 
 ### 考察点
@@ -89,6 +95,8 @@ Spring是一个Java企业开发的事实标准，日常开发中最核心的就�
 **加分项：** 实践中推荐使用MapStruct或自定义Converter做DDD风格的对象转换，避免DTO/VO/DO之间的手写set/get地狱。对跨层依赖（例如Controller想要一个聚合结果），宁可让一个上层Service来编排，也不要让Controller调3个Service自己拼装。
 
 ---
+
+<a name="Q4"></a>
 
 ## Q4：Spring Boot和Spring Cloud的理解和区别？Spring Cloud Alibaba与Spring Cloud有什么区别？
 
@@ -128,6 +136,8 @@ Spring是一个Java企业开发的事实标准，日常开发中最核心的就�
 
 ---
 
+<a name="Q5"></a>
+
 ## Q5：服务注册与发现的流程是怎样的？OpenFeign的工作原理？
 
 ### 考察点
@@ -163,6 +173,8 @@ Spring是一个Java企业开发的事实标准，日常开发中最核心的就�
 **加分项：** OpenFeign默认用JDK的HttpURLConnection，连接池复用能力差，生产务必替换为Apache HttpClient或OkHttp并配置连接池参数。如果不想侵入业务代码做降级处理，可以同时集成fallback/fallbackFactory到Hystrix或Sentinel上。另外，Feign接口推荐抽取为独立的API模块，供消费者和提供者共依赖，减少接口定义不一致的风险。
 
 ---
+
+<a name="Q6"></a>
 
 ## Q6：微服务调用用OpenFeign，如何做超时、重试、熔断与降级？
 
@@ -220,6 +232,8 @@ public interface OrderClient { ... }
 
 ---
 
+<a name="Q7"></a>
+
 ## Q7：网关鉴权怎么实现的？如何保证消息的可靠性？如何保证MQ幂等性？
 
 ### 考察点
@@ -270,6 +284,8 @@ public interface OrderClient { ... }
 
 ---
 
+<a name="Q8"></a>
+
 ## Q8：数据库连接池你选HikariCP的理由？常见参数怎么定？
 
 ### 考察点
@@ -313,6 +329,8 @@ spring.datasource.hikari:
 **加分项：** HikariCP加上Druid的组合用法：Druid做SQL监控（慢SQL、墙过滤器），HikariCP做连接管理，Spring Boot可以在多数据源中混用两者。另外，连接泄露是常见坑——`leak-detection-threshold`设为60s，配合日志监控，一旦有线程超过60s未归还连接就会打印WARN日志和堆栈，方便定位泄露点。
 
 ---
+
+<a name="Q9"></a>
 
 ## Q9：一个Spring Boot应用启动缓慢，如何定位具体耗时的@Configuration或@Bean初始化步骤？
 
@@ -371,6 +389,8 @@ trace org.springframework.boot.SpringApplication run -n 5
 **加分项：** Spring Boot 3.x引入AOT编译和和GraalVM原生镜像，能在编译期间就完成大部分Bean的初始化，启动时间可从秒级缩短到毫秒级。对于对启动时间有要求的Serverless场景可以考虑此方案。另外，使用spring-startup-recorder这类社区工具做自动化启动性能回归，集成到CI中防止启动时间退化。
 
 ---
+
+<a name="Q10"></a>
 
 ## Q10：RPC协议包括哪些内容？为什么有了HTTP还要有RPC？
 

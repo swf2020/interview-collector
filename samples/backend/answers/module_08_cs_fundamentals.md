@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：CPU 飙高如何排查？
 
 ### 考察点
@@ -41,6 +43,8 @@
 **加分项：** 在 Kubernetes 环境中，`top` 看到的无法反映真实容器配额 -- 需要看 `container_memory_working_set_bytes` 和 `container_cpu_usage_seconds_total` 等 cAdvisor 指标。如果是 Go 服务，用 `go tool pprof` 的 `-http :8080` 模式在线查看 goroutine 和 mutex profile。另外，`sys` CPU 特别高时（> 30%），要怀疑是网卡软中断不均衡导致的 -- 检查 `/proc/interrupts` 和 `/proc/softirqs`，必要时调整 `irqbalance` 或手动绑定中断到不同 CPU 核。
 
 ---
+
+<a name="Q2"></a>
 
 ## Q2：进程和线程在操作系统层面的核心区别是什么？线程哪些资源可共享、哪些不可共享？
 
@@ -88,6 +92,8 @@
 
 ---
 
+<a name="Q3"></a>
+
 ## Q3：进程切换发生了什么？为什么消耗大？上下文主要包括哪些内容？
 
 ### 考察点
@@ -134,6 +140,8 @@
 
 ---
 
+<a name="Q4"></a>
+
 ## Q4：CPU使用率很低但top负载很高，一般发生了什么问题？
 
 ### 考察点
@@ -175,6 +183,8 @@ Linux 内核在每次时钟滴答时，把所有处于 `TASK_RUNNING` 和 `TASK_
 **加分项：** `htop` 和 `glances` 等工具可以直接显示 Load Average 的分解（CPU-bound vs IO-bound）。在容器化环境中，宿主机的 Load Average 会统计所有容器内的 D 状态进程，可能导致误导 -- 某个容器的 NFS 挂载卡住会拉高整台宿主机的 Load。Kubernetes 1.25+ 引入了 `PodAndContainerStatsFromCRI` feature gate，cAdvisor 采集的 CPU/内存数据不再依赖 `/proc` 遍历，时效性更好。另外，`systemd-cgtop` 命令可以直接看到每个 Cgroup 的 CPU/内存/IO 使用，在 Cgroup v2 下排查更高效。
 
 ---
+
+<a name="Q5"></a>
 
 ## Q5：解释一下虚拟内存与物理内存的映射机制，以及什么是页缺失 (Page Fault)。
 
@@ -228,6 +238,8 @@ Page Fault 分为三种类型，但面试主要是 Minor 和 Major：
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：为什么要用虚拟内存？
 
 ### 考察点
@@ -265,6 +277,8 @@ Page Fault 分为三种类型，但面试主要是 Minor 和 Major：
 **加分项：** 并非所有系统都需要虚拟内存 -- RTOS（实时操作系统）和部分嵌入式系统的确回避 MMU，直接操作物理地址以消除不可预测的 TLB miss 和 Page Fault 延迟。但在服务器领域，VM（Virtual Machine）的嵌套页表（EPT / NPT -- Intel / AMD 分别的二级地址转换）使 Guest 虚拟地址需要两次走表（Guest VA -> Guest PA -> Host PA），TLB miss 的代价从 4 次内存访问变成 24 次（4*4+8），但硬件层面的嵌套 TLB 同样在缓解这一问题。Hypervisor 的作用域也高度依赖虚拟内存 -- ESXi 的内存超分配 / balloon driver / Transparent Page Sharing (TPS) 背后都由页表和 Page Fault 驱动。
 
 ---
+
+<a name="Q7"></a>
 
 ## Q7：TCP三次握手是哪三次？为什么是3次？2次行不行？4次行不行？
 
@@ -305,6 +319,8 @@ Page Fault 分为三种类型，但面试主要是 Minor 和 Major：
 **加分项：** TCP Fast Open（TFO，RFC 7413）允许在 SYN 报文中携带应用数据，简化首次连接的握手。过程 = Client 通过常规三次握手获得 TFO Cookie（含服务器加密的 TFO 选项），后续连接时 Client 在 SYN 中携带 Cookie + 数据，Server 验证 Cookie 通过后数据在 ESTABLISHED 之前就交付给应用层，首次数据 RT 节省 1 个 RTT。但 TFO 存在重放攻击风险（SYN 数据可能被重放多次），适用于幂等请求（如 HTTP GET），不适用于非幂等请求（如 POST / 扣款）。Cloudflare 的实验中，开启 TFO 对 CDN 小资源延迟提升约 15-25%。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：TCP的四次挥手流程是怎样的？为什么挥手需要四次？
 
@@ -366,6 +382,8 @@ TIME_WAIT 有两个核心作用：
 
 ---
 
+<a name="Q9"></a>
+
 ## Q9：TCP 和 UDP 区别及适用场景是什么？
 
 ### 考察点
@@ -401,6 +419,8 @@ TCP 和 UDP 本质上是两种不同设计哲学的产物。TCP 的设计目标�
 **加分项：** TCP 选项字段（如 SACK、Timestamp、Window Scale）虽然使头部变大，但对高带宽时延积（BDP）网络下性能至关重要——Window Scale 让窗口从 64KB 扩展到 GB 级，Timestamps 让 RTT 测量更精确。另外，QUIC 的"连接迁移"能力（WiFi 切 4G 不断连）正是利用了 UDP 无连接特性——不依赖四元组，只靠 Connection ID 标识连接，这在移动端体验至关重要。
 
 ---
+
+<a name="Q10"></a>
 
 ## Q10：TCP 拥塞控制和流量控制的区别是什么？
 
@@ -439,6 +459,8 @@ TCP 头部有一个 16 位的 `Window Size` 字段，接收方在每次 ACK 中�
 
 ---
 
+<a name="Q11"></a>
+
 ## Q11：微信使用 TCP 还是 UDP？为什么会出现双方聊天顺序不一致？
 
 ### 考察点
@@ -472,6 +494,8 @@ TCP 头部有一个 16 位的 `Window Size` 字段，接收方在每次 ACK 中�
 **加分项：** Slack 和 Discord 也在协议中引入了 `nonce` 和 `sequence number` 的双重机制：客户端发消息时生成 nonce，服务端确认后返回 seq，客户端在收到 seq 前 optimistic 渲染（回声消除），完成后用 seq 替换本地缓存。另外，腾讯自研的 Mars 网络框架（微信底层网络库）广泛使用 TCP 长连接 + 智能心跳 + 弱网络优化，但同时也保留了 UDP 通道用于信令和日志上报。
 
 ---
+
+<a name="Q12"></a>
 
 ## Q12：select / poll / epoll 的区别是什么？epoll 的时间复杂度是多少？
 
@@ -514,6 +538,8 @@ select、poll、epoll 都实现 IO 多路复用——单个线程监控多个 fd
 **加分项：** FreeBSD 的 kqueue 和 Solaris 的 `/dev/poll` 也实现了类似 epoll 的 O(1) 语义。Linux 5.1+ 引入了 `io_uring`，用共享环形缓冲区的 SQ/CQ 机制更进一步——完全消除系统调用开销，将 IO 提交和完成放到共享内存中，比 epoll 更适合高 IOPS 场景（NVMe 存储）。Windows 的 IOCP（I/O Completion Port）采用 Proactor 模式（内核主动通知完成事件），而 epoll 是 Reactor 模式（用户主动去取），这是两类不同的异步 IO 模型。
 
 ---
+
+<a name="Q13"></a>
 
 ## Q13：为什么 epoll 选择 LT 而不是 ET？
 
@@ -580,6 +606,8 @@ for (;;) {
 
 ---
 
+<a name="Q14"></a>
+
 ## Q14：eventpoll 的 3 个核心成员是什么？epoll 的等待队列底层原理是什么？
 
 ### 考察点
@@ -631,6 +659,8 @@ wait_queue_head_t wq;
 **加分项：** 红黑树的选择不是随意的。早期 Linux 的 epoll 实现曾用过哈希表，但在大量 fd 增删的场景下哈希冲突和 resize 的成本不可接受。红黑树的 O(log n) 操作在 10 万 fd 级别也只需约 17 次比较，且内存布局紧凑。另外，`ep_poll_callback` 回调在中断上下文（软中断）中执行，因此不能睡眠、不能持有 mutex。当就绪事件数量激增时，`rdllist` 可能触发"溢出链表"(ovflist)，用单链表在 O(1) 时间追加大量就绪事件，等待 `epoll_wait` 醒来后批量迁移到 `rdllist`。
 
 ---
+
+<a name="Q15"></a>
 
 ## Q15：epoll_create / epoll_wait 的底层原理是什么？
 
@@ -695,6 +725,8 @@ wait_queue_head_t wq;
 
 ---
 
+<a name="Q16"></a>
+
 ## Q16：epoll 有哪些缺点？惊群效应是什么？select / poll / epoll 都有惊群效应吗？
 
 ### 考察点
@@ -747,6 +779,8 @@ wait_queue_head_t wq;
 
 **加分项：** 内核社区的 `EPOLLEXCLUSIVE` 的初始补丁非常激烈——LT 模式的守护者认为这违背了 LT 的语义（多个线程可能想同时读取同一 fd 的不同数据块），ET 模式的倡导者则认为"如果你需要多个线程竞争读同一个 fd，你的架构就已经错了"。最终妥协方案是：`EPOLLEXCLUSIVE` 只在 ET 模式下生效，LT 模式下即便是 exclusive waiter 也会被全部唤醒。另外，`io_uring` 避免惊群的方式更激进——每个 ring 只对应一个线程，不使用共享等待队列。`epoll_wait` 本身也有一个微妙的惊群问题：当两个线程同时调用 `epoll_ctrl(ADD)` 同一个 fd 到不同 epoll 实例时（嵌套 epoll），两个回调都需要被调用——这是正确行为，不是惊群。
 
+<a name="Q17"></a>
+
 ## Q17：epoll mmap是什么？epoll 是零拷贝吗？
 
 ### 考察点
@@ -785,6 +819,8 @@ epoll 的 mmap 只优化了第 2 步（事件通知），第 3 步的数据拷�
 **加分项：** 在 Linux 4.x 内核中，epoll 还存在一个与 mmap 相关的优化——epoll 的就绪列表在内核中通过红黑树+就绪链表维护，当事件密集时，mmap 避免了每次 `epoll_wait` 都要做 `copy_to_user`，在高并发场景下减少了系统调用的内存拷贝开销。但在极端的短连接场景下（如每秒数十万新建连接），epoll_ctl 的频繁红黑树操作反而可能成为瓶颈，此时可以考虑 io_uring（Linux 5.1+），它通过共享的 SQ/CQ 环形缓冲区同样使用了 mmap，但将整个 IO 提交和完成流程都做成了无系统调用模式，性能更优。
 
 ---
+
+<a name="Q18"></a>
 
 ## Q18：如何理解"零拷贝"(Zero-Copy)技术？在Netty中ByteBuf如何利用零拷贝来提升性能？
 
@@ -843,6 +879,8 @@ ctx.writeAndFlush(composite);
 
 ---
 
+<a name="Q19"></a>
+
 ## Q19：死锁的四个条件是什么？解决方式有哪些？
 
 ### 考察点
@@ -894,6 +932,8 @@ public void transfer(Account from, Account to, BigDecimal amount) {
 **加分项：** 死锁的排查工具链：`jstack <pid>` 可以打印 JVM 中所有线程的调用栈，搜索 `deadlock` 关键字可直接定位死锁线程对。Java 5 以后 JVM 内置了死锁检测（`ThreadMXBean.findDeadlockedThreads()`），线上可以通过 JMX 导出监控。对于 Go 语言，runtime 的 `GODEBUG=schedtrace=1000` 配合 `go tool trace` 可以分析 goroutine 的阻塞情况，但 Go 本身没有内置的死锁检测器（因为 goroutine 不是线程），需要使用 `go-deadlock` 库或 `pprof` 的 mutex profile 来排查。
 
 ---
+
+<a name="Q20"></a>
 
 ## Q20：TCP连接是逻辑还是物理概念？同一物理链路上多个TCP连接怎么区分？
 
@@ -949,6 +989,8 @@ IP层                     路由表查找，封装IP包
 
 ---
 
+<a name="Q21"></a>
+
 ## Q21：1亿个数据取出最大前100个，如何实现？
 
 ### 考察点
@@ -1003,6 +1045,8 @@ public int[] topK(int[] nums, int k) {
 **加分项：** JDK 的 `PriorityQueue` 默认是小顶堆，适合 Top-K 大问题；求 Top-K 小则用大顶堆（自定义 Comparator）。堆的 `siftDown` 操作在热点数据的批量插入上有优化空间——如果一次性批量替换堆顶（batch replace），可以改写 siftDown 减少重复下沉，性能提升约 20%。Google Guava 的 `TopKSelector` 和 Twitter 的 Algebird 库都提供了更高效的 Top-K 实现。另外，如果数据的值域已知（如 32 位整数），可以用位图（BitMap）+ 选第 100 大阈值的方式，时间复杂度 O(值域范围)，在特定场景（数据密集、值域小）下比堆方案更快。
 
 ---
+
+<a name="Q22"></a>
 
 ## Q22：1G 的内存，40 亿个 QQ 号，如何实现去重？
 
@@ -1063,6 +1107,8 @@ for (long qq : qqList) {
 **加分项：** Redis 的 BitMap（`SETBIT` / `GETBIT`）底层就是连续字符串，RDB 持久化时以字符串形式存储，可以灵活地分 key 做分段 BitMap（如 `bitmap:qq:0-99999999`），方便做细粒度的过期和内存控制。Roaring BitMap 是更先进的方案，它结合了有序数组和 BitMap，在数据分布稀疏时数组更省内存，密集时 BitMap CPU 更快——GitHub 的 `RoaringBitmap` 库在 Java 生态中广泛使用，Spark 3.0+ 的 `BloomFilter` 和 `countDistinct` 中也大量使用了相关技术。
 
 ---
+
+<a name="Q23"></a>
 
 ## Q23：4G 的内存，500G 数据需要排序，如何实现？
 

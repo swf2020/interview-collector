@@ -4,6 +4,8 @@
 
 ---
 
+<a name="Q1"></a>
+
 ## Q1：MCP（模型上下文协议）和 Function Calling 有什么区别？什么时候用哪个？在构建复杂 AI 应用时如何选择或结合使用它们？
 
 ### 考察点
@@ -63,6 +65,8 @@ const result = await mcpClient.callTool(toolName, args);
 
 ---
 
+<a name="Q2"></a>
+
 ## Q2：Agent 工具调用失败了怎么办？你的错误处理和重试策略是什么？如果同时触发多个 Function Call 怎么处理？
 
 ### 考察点
@@ -109,6 +113,8 @@ const result = await mcpClient.callTool(toolName, args);
 - 熔断器状态对模型透明：当工具被熔断时，提前告知模型"当前工具不可用"，让模型选择替代方案，而不是等到调用失败再处理。
 
 ---
+
+<a name="Q3"></a>
 
 ## Q3：MCP 的交互流程是怎样的？Agent 如何与 MCP Server 连接通信？MCP 提供了哪些能力（Tools/Resources/Prompts）？
 
@@ -161,6 +167,8 @@ Streamable HTTP 是 2025 年 3 月更新的新模式，解决了 SSE 在生产�
 - Resources 支持 `uri://` 定位方式，使 Agent 可以像访问 Web 资源一样访问内部数据源，实现统一资源模型。
 
 ---
+
+<a name="Q4"></a>
 
 ## Q4：Agent 工具太多时怎么管理？工具路由怎么做？设计有 100 个 Tool 的 Agent 你会怎么设计？
 
@@ -225,6 +233,8 @@ Streamable HTTP 是 2025 年 3 月更新的新模式，解决了 SSE 在生产�
 
 ---
 
+<a name="Q5"></a>
+
 ## Q5：Function Call 的底层实现流程是什么？模型如何知道该调用哪个工具？LLM 自己执行 Function Call 吗？
 
 ### 考察点
@@ -280,6 +290,8 @@ Streamable HTTP 是 2025 年 3 月更新的新模式，解决了 SSE 在生产�
 
 ---
 
+<a name="Q6"></a>
+
 ## Q6：MCP 和 A2A 都是协议，它们有什么区别？为什么 MCP 解决不了 A2A 要解决的问题？
 
 ### 考察点
@@ -333,6 +345,8 @@ MCP 是 Agent 的"感官和四肢"（感知与操作外部世界），A2A 是 Ag
 - Google 在设计 A2A 时明确表示"不替代 MCP，而是补充 MCP 未覆盖的 Agent 间通信层"。
 
 ---
+
+<a name="Q7"></a>
 
 ## Q7：MCP 的 Tool/Resource/Prompt 概念是什么？MCP 的工具发现机制是什么？
 
@@ -393,6 +407,8 @@ MCP 的工具发现是"声明 + 事件驱动"的双机制：
 - 最新的 MCP 规范支持 Resource 的订阅机制（`resources/subscribe`），当资源内容变更时 Server 主动推送更新，这对实时性要求高的场景（如监控仪表盘）非常有用。
 
 ---
+
+<a name="Q8"></a>
 
 ## Q8：Parallel Tool Calling 是怎么实现的？有什么注意事项？多个工具怎么并行执行？顺序怎么确定？
 
@@ -468,6 +484,8 @@ for (const tc of toolCalls) {
 
 ---
 
+<a name="Q9"></a>
+
 ## Q9：如果 Agent 调用工具失败或超时，一般怎么处理？如何设计 Prompt 让 Agent 给用户合理的反馈？
 
 ### 考察点
@@ -533,6 +551,8 @@ tool_result 的 error 字段格式：
 
 ---
 
+<a name="Q10"></a>
+
 ## Q10：在设计 Agent 的工具调用能力时，你的技术方案是什么？如何选择合适的工具 API？会使用哪些函数调用框架？
 
 ### 考察点
@@ -593,6 +613,8 @@ tool_result 的 error 字段格式：
 - 用 feature flag 控制新工具的灰度上线，降低新工具引入的风险。
 
 ---
+
+<a name="Q11"></a>
 
 ## Q11：Skills 和 System Prompt / Function Call 有什么区别？Tool 和 Skill 哪个更适合 Agent 演进方向？你会怎么设计一个 Skill？
 
@@ -701,6 +723,8 @@ Skill 的生命周期管理：注册 → 意图匹配激活 → 加载 prompt + 
 
 ---
 
+<a name="Q12"></a>
+
 ## Q12：MCP 基于什么协议实现的？MCP 如何保证安全性？
 
 ### 考察点
@@ -763,6 +787,8 @@ MCP 构建在 JSON-RPC 2.0 之上，这是一个轻量级、无状态、传输�
 - 实现"沙箱执行"：对高风险工具（如文件系统操作、shell 命令），在执行层做 chroot/jail/container 隔离，限制其可操作的目录范围和系统调用。
 
 ---
+
+<a name="Q13"></a>
 
 ## Q13：如果 API 返回结果有字段缺失，或者有冗余内容，你会怎么处理？
 
@@ -865,6 +891,8 @@ def post_process_tool_result(raw_result: dict, tool_schema: ToolSchema) -> dict:
 
 ---
 
+<a name="Q14"></a>
+
 ## Q14：你对 MCP 了解多吗？有没有写过相关的 MCP Server？
 
 ### 考察点
@@ -928,6 +956,8 @@ def post_process_tool_result(raw_result: dict, tool_schema: ToolSchema) -> dict:
 - 输出了 MCP Server 开发的脚手架模板，新项目 10 分钟即可搭建可运行的 Server。
 
 ---
+
+<a name="Q15"></a>
 
 ## Q15：如何让 Qwen 模型正常使用相关工具，具体实现方式是什么？
 
@@ -1127,6 +1157,8 @@ def safe_parse_args(args_str: str) -> dict:
 
 ---
 
+<a name="Q16"></a>
+
 ## Q16：用户如何自定义 Agent 与 MCP？流程是什么？
 
 ### 考察点
@@ -1189,6 +1221,8 @@ def safe_parse_args(args_str: str) -> dict:
 
 ---
 
+<a name="Q17"></a>
+
 ## Q17：Agent skill 开发是怎么做的？什么是计划模式（Plan Mode）？
 
 ### 考察点
@@ -1235,6 +1269,8 @@ Claude Code 的 Skill 系统是这个方向的典型实践——Skill 通过 YAM
 - Skill 的热更新：修改 Skill 的 Prompt Extension 后，新的 Agent 会话立即生效，无需重启服务。
 
 ---
+
+<a name="Q18"></a>
 
 ## Q18：请解释 MCP 的概念。在火山引擎这样的云平台上，提供一个 MCP Server 管理的解决方案，您会考虑哪些关键模块？
 
@@ -1313,6 +1349,8 @@ MCP Server 管理的最终目的是让 Agent 使用工具。此模块负责：
 
 ---
 
+<a name="Q19"></a>
+
 ## Q19：请描述您之前设计和实现的一个 Agent 系统。在实现工具调用时，您是如何解决工具选择和参数校验这两个关键问题的？
 
 ### 考察点
@@ -1377,6 +1415,8 @@ Pydantic 校验失败时，不直接返回异常堆栈，而是生成结构化�
 
 ---
 
+<a name="Q20"></a>
+
 ## Q20：Function Call 和普通的 Prompt + 正则解析有什么区别？
 
 ### 考察点
@@ -1428,6 +1468,8 @@ Prompt + 正则解析是早期 LLM 能力不足时的"取巧"方案，适合 dem
 - 在 streaming 场景下，正则解析需要"等待完整回复"后才能做提取，而 Function Calling 的 tool_calls 可以增量解析并提前启动工具调用，提升响应速度。
 
 ---
+
+<a name="Q21"></a>
 
 ## Q21：如果你要给团队接入 10 个外部工具，你会用 MCP 还是直接写 Function Call？为什么？
 
@@ -1489,6 +1531,8 @@ Prompt + 正则解析是早期 LLM 能力不足时的"取巧"方案，适合 dem
 
 ---
 
+<a name="Q22"></a>
+
 ## Q22：为什么说 Function Call 是 Agent 的基石？
 
 ### 考察点
@@ -1531,6 +1575,8 @@ Function Call 是 Agent 的基石，但它不是 Agent 的全部。一个完整�
 - 未来的演进方向（如 A2A 协议、MCP）不是替代 Function Call，而是围绕 Function Call 构建更上层的能力——A2A 让多个 Agent 的 Function Call 能力可以协作，MCP 让 Function Call 的工具接入更标准化。
 
 ---
+
+<a name="Q23"></a>
 
 ## Q23：Function Calling 为 LLM 应用带来了哪些好处？同时又引入了哪些新的挑战或限制？
 
@@ -1578,6 +1624,8 @@ Function Calling 的好处是革命性的——它将 LLM 从"思想家"升级�
 - 参数的空值语义混淆：`null` 可能表示"用户没提供"也可能表示"该字段不适用"。工具定义中应区分"缺失"和"空值"的语义，避免 LLM 填充错误默认值。
 
 ---
+
+<a name="Q24"></a>
 
 ## Q24：在 Dify 中，如果你想让它调用一个外部的天气 API，应该如何实现？
 
@@ -1673,6 +1721,8 @@ Dify 提供了「发送测试」功能——手动填写参数值，点击发送
 
 ---
 
+<a name="Q25"></a>
+
 ## Q25：A2A 和 MCP 的区别是什么？
 
 ### 考察点
@@ -1732,6 +1782,8 @@ MCP（Model Context Protocol）和 A2A（Agent-to-Agent）是 Agent 生态中两
 - 在生产环境中，MCP Server 和 A2A Agent 可以嵌套——一个 A2A Agent 内部既是 A2A Client（与其他 Agent 通信），又是 MCP Client（调用工具），实现协议栈的叠加使用。
 
 ---
+
+<a name="Q26"></a>
 
 ## Q26：MCP 是什么？解决了什么问题？（N x M 爆炸问题）
 
@@ -1799,6 +1851,8 @@ MCP 的解决思路是"解耦工具提供方与工具消费方"：
 - MCP 的 Server 可以互相组合——一个"高级分析 Server"可以内部调用"数据库 Server"和"图表 Server"，形成工具的层级复用网络。
 
 ---
+
+<a name="Q27"></a>
 
 ## Q27：Function Call、MCP、Skills 三者的区别与协作？
 
@@ -1878,6 +1932,8 @@ Function Call、MCP、Skills 是 Agent 工具调用技术栈中三个不同层�
 - Claude Code 的 Skill 系统是目前 Skill + MCP 协作的最成熟实践：Skill 通过 YAML 声明式定义能力模块，底层通过 MCP Server 接入工具，LLM 通过 Function Calling / tool_use 执行具体操作。
 
 ---
+
+<a name="Q28"></a>
 
 ## Q28：Skills 是什么？和 Prompt/System Prompt/Few-shot 有什么区别？
 
